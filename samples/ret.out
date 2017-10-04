@@ -1,0 +1,12 @@
+boolean      line 1 cols 1-7 is T_Bool 
+x            line 1 cols 9-9 is T_Identifier 
+;            line 1 cols 10-10 is T_Semicolon 
+void         line 3 cols 1-4 is T_Void 
+main         line 3 cols 6-9 is T_Identifier 
+(            line 3 cols 11-11 is T_LeftParen 
+)            line 3 cols 12-12 is T_RightParen 
+{            line 3 cols 14-14 is T_LeftBrace 
+return       line 4 cols 9-14 is T_Return 
+x            line 4 cols 16-16 is T_Identifier 
+;            line 4 cols 17-17 is T_Semicolon 
+}            line 5 cols 1-1 is T_RightBrace 

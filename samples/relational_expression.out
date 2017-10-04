@@ -1,0 +1,44 @@
+void         line 1 cols 1-4 is T_Void 
+foo          line 1 cols 6-8 is T_Identifier 
+(            line 1 cols 9-9 is T_LeftParen 
+)            line 1 cols 10-10 is T_RightParen 
+{            line 1 cols 12-12 is T_LeftBrace 
+int          line 2 cols 3-5 is T_Int 
+f            line 2 cols 7-7 is T_Identifier 
+;            line 2 cols 8-8 is T_Semicolon 
+int          line 3 cols 3-5 is T_Int 
+i2           line 3 cols 7-8 is T_Identifier 
+;            line 3 cols 9-9 is T_Semicolon 
+f            line 5 cols 3-3 is T_Identifier 
+<            line 5 cols 4-4 is T_LeftAngle 
+2            line 5 cols 5-5 is T_IntConstant (value = 2)
+;            line 5 cols 6-6 is T_Semicolon 
+f            line 6 cols 3-3 is T_Identifier 
+<            line 6 cols 4-4 is T_LeftAngle 
+i2           line 6 cols 5-6 is T_Identifier 
+;            line 6 cols 7-7 is T_Semicolon 
+f            line 8 cols 3-3 is T_Identifier 
+>            line 8 cols 4-4 is T_RightAngle 
+3            line 8 cols 5-5 is T_IntConstant (value = 3)
+;            line 8 cols 6-6 is T_Semicolon 
+f            line 9 cols 3-3 is T_Identifier 
+>            line 9 cols 4-4 is T_RightAngle 
+i2           line 9 cols 5-6 is T_Identifier 
+;            line 9 cols 7-7 is T_Semicolon 
+f            line 11 cols 3-3 is T_Identifier 
+<=           line 11 cols 4-5 is T_LessEqual 
+1            line 11 cols 6-6 is T_IntConstant (value = 1)
+;            line 11 cols 7-7 is T_Semicolon 
+f            line 12 cols 3-3 is T_Identifier 
+<=           line 12 cols 4-5 is T_LessEqual 
+i2           line 12 cols 6-7 is T_Identifier 
+;            line 12 cols 8-8 is T_Semicolon 
+f            line 14 cols 3-3 is T_Identifier 
+>=           line 14 cols 4-5 is T_GreaterEqual 
+1            line 14 cols 6-6 is T_IntConstant (value = 1)
+;            line 14 cols 7-7 is T_Semicolon 
+f            line 15 cols 3-3 is T_Identifier 
+>=           line 15 cols 4-5 is T_GreaterEqual 
+i2           line 15 cols 6-7 is T_Identifier 
+;            line 15 cols 8-8 is T_Semicolon 
+}            line 16 cols 1-1 is T_RightBrace 

@@ -1,0 +1,31 @@
+void         line 1 cols 1-4 is T_Void 
+foo          line 1 cols 6-8 is T_Identifier 
+(            line 1 cols 9-9 is T_LeftParen 
+)            line 1 cols 10-10 is T_RightParen 
+{            line 1 cols 12-12 is T_LeftBrace 
+boolean      line 2 cols 3-9 is T_Bool 
+b            line 2 cols 11-11 is T_Identifier 
+;            line 2 cols 12-12 is T_Semicolon 
+int          line 3 cols 3-5 is T_Int 
+i            line 3 cols 7-7 is T_Identifier 
+;            line 3 cols 8-8 is T_Semicolon 
+int          line 4 cols 3-5 is T_Int 
+j            line 4 cols 7-7 is T_Identifier 
+;            line 4 cols 8-8 is T_Semicolon 
+b            line 6 cols 3-3 is T_Identifier 
+==           line 6 cols 5-6 is T_EQ 
+true         line 6 cols 8-11 is T_BoolConstant (value = true)
+;            line 6 cols 12-12 is T_Semicolon 
+b            line 7 cols 3-3 is T_Identifier 
+==           line 7 cols 5-6 is T_EQ 
+false        line 7 cols 8-12 is T_BoolConstant (value = false)
+;            line 7 cols 13-13 is T_Semicolon 
+i            line 9 cols 3-3 is T_Identifier 
+!=           line 9 cols 5-6 is T_NE 
+3            line 9 cols 8-8 is T_IntConstant (value = 3)
+;            line 9 cols 9-9 is T_Semicolon 
+i            line 10 cols 3-3 is T_Identifier 
+!=           line 10 cols 5-6 is T_NE 
+j            line 10 cols 8-8 is T_Identifier 
+;            line 10 cols 9-9 is T_Semicolon 
+}            line 11 cols 1-1 is T_RightBrace 

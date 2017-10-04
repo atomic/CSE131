@@ -1,0 +1,6 @@
+var1         line 1 cols 1-4 is T_Identifier 
+var2         line 1 cols 9-12 is T_Identifier 
+var3         line 2 cols 2-5 is T_Identifier 
+var4         line 2 cols 9-12 is T_Identifier 
+var5         line 3 cols 1-4 is T_Identifier 
+var6         line 3 cols 7-10 is T_Identifier 

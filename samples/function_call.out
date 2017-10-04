@@ -1,0 +1,44 @@
+void         line 1 cols 1-4 is T_Void 
+foo          line 1 cols 6-8 is T_Identifier 
+(            line 1 cols 9-9 is T_LeftParen 
+)            line 1 cols 10-10 is T_RightParen 
+{            line 1 cols 11-11 is T_LeftBrace 
+return       line 2 cols 5-10 is T_Return 
+5            line 2 cols 12-12 is T_IntConstant (value = 5)
+;            line 2 cols 13-13 is T_Semicolon 
+}            line 3 cols 1-1 is T_RightBrace 
+void         line 5 cols 1-4 is T_Void 
+main         line 5 cols 6-9 is T_Identifier 
+(            line 5 cols 10-10 is T_LeftParen 
+)            line 5 cols 11-11 is T_RightParen 
+{            line 5 cols 13-13 is T_LeftBrace 
+int          line 6 cols 5-7 is T_Int 
+x            line 6 cols 9-9 is T_Identifier 
+;            line 6 cols 10-10 is T_Semicolon 
+foo          line 7 cols 5-7 is T_Identifier 
+(            line 7 cols 8-8 is T_LeftParen 
+x            line 7 cols 9-9 is T_Identifier 
+=            line 7 cols 11-11 is T_Equal 
+5            line 7 cols 13-13 is T_IntConstant (value = 5)
+)            line 7 cols 14-14 is T_RightParen 
+;            line 7 cols 15-15 is T_Semicolon 
+foo1         line 8 cols 5-8 is T_Identifier 
+(            line 8 cols 9-9 is T_LeftParen 
+5            line 8 cols 10-10 is T_IntConstant (value = 5)
+)            line 8 cols 11-11 is T_RightParen 
+;            line 8 cols 12-12 is T_Semicolon 
+foo2         line 9 cols 5-8 is T_Identifier 
+(            line 9 cols 9-9 is T_LeftParen 
+5            line 9 cols 10-10 is T_IntConstant (value = 5)
+,            line 9 cols 11-11 is T_Comma 
+x            line 9 cols 13-13 is T_Identifier 
+=            line 9 cols 15-15 is T_Equal 
+10           line 9 cols 17-18 is T_IntConstant (value = 10)
+,            line 9 cols 19-19 is T_Comma 
+2            line 9 cols 21-21 is T_IntConstant (value = 2)
+)            line 9 cols 22-22 is T_RightParen 
+;            line 9 cols 23-23 is T_Semicolon 
+return       line 10 cols 5-10 is T_Return 
+x            line 10 cols 12-12 is T_Identifier 
+;            line 10 cols 13-13 is T_Semicolon 
+}            line 11 cols 1-1 is T_RightBrace 

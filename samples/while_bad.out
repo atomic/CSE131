@@ -1,0 +1,20 @@
+void         line 1 cols 1-4 is T_Void 
+main         line 1 cols 6-9 is T_Identifier 
+(            line 1 cols 11-11 is T_LeftParen 
+)            line 1 cols 12-12 is T_RightParen 
+{            line 1 cols 14-14 is T_LeftBrace 
+int          line 2 cols 9-11 is T_Int 
+x            line 2 cols 13-13 is T_Identifier 
+;            line 2 cols 14-14 is T_Semicolon 
+while        line 3 cols 9-13 is T_While 
+(            line 3 cols 15-15 is T_LeftParen 
+100          line 3 cols 16-18 is T_IntConstant (value = 100)
+)            line 3 cols 19-19 is T_RightParen 
+{            line 3 cols 21-21 is T_LeftBrace 
+x            line 4 cols 17-17 is T_Identifier 
+++           line 4 cols 18-19 is T_Inc 
+;            line 4 cols 20-20 is T_Semicolon 
+break        line 5 cols 17-21 is T_Break 
+;            line 5 cols 22-22 is T_Semicolon 
+}            line 6 cols 9-9 is T_RightBrace 
+}            line 8 cols 1-1 is T_RightBrace 
