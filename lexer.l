@@ -62,6 +62,9 @@ int currentLineNum, currentColNum;
  */
 CHARS               ([A-Za-z_])
 DIGITS              ([0-9])
+INLINE_COMMENT      ("//")
+COMMENT_START       ("/*")
+COMMENT_END         ("*/")
 %% 
 
 "void"              { return T_Void;        }
@@ -73,6 +76,9 @@ DIGITS              ([0-9])
             yylval.integerConstant = atoi(yytext);
             return T_IntConstant;
 }
+
+{INLINE_COMMENT}.*
+{COMMENT_START}(.|\n)*{COMMENT_END}
 
 "bool"     { return T_Bool;         }
 "int"      { return T_Int;          }
@@ -115,6 +121,8 @@ DIGITS              ([0-9])
 "static"   { return T_Static;       }
 "class"    { return T_Class;        }
 
+
+
 {CHARS}({DIGITS}|{CHARS})*  { 
     // printf(yytext);
     // printf("%d", yyleng);
@@ -124,7 +132,8 @@ DIGITS              ([0-9])
     return T_Identifier;
 }
 
-[ t]+     ;
+
+[ \t]+     ;
 \n          { currentLineNum++; currentColNum=1; }
 
 %%
