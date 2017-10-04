@@ -54,3 +54,4 @@ lexer
 
 # Our output files
 mysamples/
+temp.out
