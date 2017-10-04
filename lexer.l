@@ -65,6 +65,22 @@ int currentLineNum, currentColNum;
 
 "true"|"false"      { yylval.boolConstant = (yytext[0] == 't');
                          return T_BoolConstant; }
+
+[+\-]?[0-9]+     { 
+            yylval.integerConstant = atoi(yytext);
+            return T_IntConstant;
+}
+
+"bool"     { return T_Bool;     }
+"int"      { return T_Int;      }
+"while"    { return T_While;    }
+"break"    { return T_Break;    }
+"continue" { return T_Continue; }
+"else"     { return T_Else;     }
+"for"      { return T_For;      }
+"if"       { return T_If;       }
+"return"   { return T_Return;   }
+
 %%
 
 /* Function: InitLexer
@@ -81,7 +97,7 @@ int currentLineNum, currentColNum;
  */
 void InitLexer()
 {
-    yy_flex_debug = false;
+    yy_flex_debug = true;
     currentLineNum = 1;
     currentColNum = 1;
 }
