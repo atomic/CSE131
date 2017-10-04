@@ -86,7 +86,7 @@ digits              ([0-9])
 "--"       { return T_Dec;          }
 "<="       { return T_LessEqual;    }
 ">="       { return T_GreaterEqual; }
-"="        { return T_EQ;           }
+"=="       { return T_EQ;           }
 "!="       { return T_NE;           }
 "&&"       { return T_And";         }
 "||"       { return T_Or;           }
@@ -112,7 +112,7 @@ digits              ([0-9])
 "public"   { return T_Public;       }
 "private"  { return T_Private;      }
 "static"   { return T_Static;       }
-"class"    { return T_Clas;         }
+"class"    { return T_Class;        }
 {letters}({digits}|{letters})+  { return T_Identifier; }
 
 %%
