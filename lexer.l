@@ -88,7 +88,7 @@ digits              ([0-9])
 ">="       { return T_GreaterEqual; }
 "=="       { return T_EQ;           }
 "!="       { return T_NE;           }
-"&&"       { return T_And";         }
+"&&"       { return T_And;         }
 "||"       { return T_Or;           }
 "*="       { return T_MulAssign;    }
 "/="       { return T_DivAssign;    }
