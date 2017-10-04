@@ -115,6 +115,9 @@ digits              ([0-9])
 "class"    { return T_Class;        }
 {letters}({digits}|{letters})+  { return T_Identifier; }
 
+[ t]+     ;
+\n          { currentLineNum++; currentColNum=1; }
+
 %%
 
 /* Function: InitLexer
@@ -131,7 +134,7 @@ digits              ([0-9])
  */
 void InitLexer()
 {
-    yy_flex_debug = true;
+    yy_flex_debug = false;
     currentLineNum = 1;
     currentColNum = 1;
 }
