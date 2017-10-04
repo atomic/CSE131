@@ -69,12 +69,7 @@ DIGITS              ([0-9])
 "true"|"false"      { yylval.boolConstant = (yytext[0] == 't');
                          return T_BoolConstant; }
 
-[+\-]?[0-9]+     { 
-            yylval.integerConstant = atoi(yytext);
-            return T_IntConstant;
-}
-
-"bool"     { return T_Bool;         }
+"boolean"  { return T_Bool;         }
 "int"      { return T_Int;          }
 "while"    { return T_While;        }
 "break"    { return T_Break;        }
@@ -105,6 +100,11 @@ DIGITS              ([0-9])
 ";"        { return T_Semicolon;    }
 "-"        { return T_Dash;         }
 "+"        { return T_Plus;         }
+
+{DIGITS}+ { 
+            yylval.integerConstant = atoi(yytext);
+            return T_IntConstant;   }
+
 "*"        { return T_Star;         }
 "/"        { return T_Slash;        }
 ","        { return T_Comma;        }
@@ -124,7 +124,7 @@ DIGITS              ([0-9])
     return T_Identifier;
 }
 
-[ t]+     ;
+[ \t]+     ;
 \n          { currentLineNum++; currentColNum=1; }
 
 %%
