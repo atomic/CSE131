@@ -1,0 +1,60 @@
+void         line 1 cols 1-4 is T_Void 
+foo          line 1 cols 6-8 is T_Identifier 
+(            line 1 cols 9-9 is T_LeftParen 
+)            line 1 cols 10-10 is T_RightParen 
+{            line 1 cols 12-12 is T_LeftBrace 
+int          line 2 cols 3-5 is T_Int 
+f            line 2 cols 7-7 is T_Identifier 
+=            line 2 cols 9-9 is T_Equal 
+4            line 2 cols 11-11 is T_IntConstant (value = 4)
+;            line 2 cols 12-12 is T_Semicolon 
+boolean      line 3 cols 3-9 is T_Bool 
+b            line 3 cols 11-11 is T_Identifier 
+=            line 3 cols 13-13 is T_Equal 
+false        line 3 cols 15-19 is T_BoolConstant (value = false)
+;            line 3 cols 20-20 is T_Semicolon 
+for          line 5 cols 3-5 is T_For 
+(            line 5 cols 7-7 is T_LeftParen 
+f            line 5 cols 8-8 is T_Identifier 
+=            line 5 cols 10-10 is T_Equal 
+1            line 5 cols 12-12 is T_IntConstant (value = 1)
+;            line 5 cols 13-13 is T_Semicolon 
+b            line 5 cols 15-15 is T_Identifier 
+!=           line 5 cols 17-18 is T_NE 
+true         line 5 cols 20-23 is T_BoolConstant (value = true)
+;            line 5 cols 24-24 is T_Semicolon 
+f            line 5 cols 26-26 is T_Identifier 
+++           line 5 cols 27-28 is T_Inc 
+)            line 5 cols 29-29 is T_RightParen 
+b            line 6 cols 5-5 is T_Identifier 
+=            line 6 cols 7-7 is T_Equal 
+false        line 6 cols 9-13 is T_BoolConstant (value = false)
+;            line 6 cols 14-14 is T_Semicolon 
+for          line 8 cols 3-5 is T_For 
+(            line 8 cols 7-7 is T_LeftParen 
+f            line 8 cols 8-8 is T_Identifier 
+=            line 8 cols 10-10 is T_Equal 
+1            line 8 cols 12-12 is T_IntConstant (value = 1)
+;            line 8 cols 13-13 is T_Semicolon 
+b            line 8 cols 15-15 is T_Identifier 
+!=           line 8 cols 17-18 is T_NE 
+true         line 8 cols 20-23 is T_BoolConstant (value = true)
+;            line 8 cols 24-24 is T_Semicolon 
+f            line 8 cols 26-26 is T_Identifier 
+++           line 8 cols 27-28 is T_Inc 
+)            line 8 cols 29-29 is T_RightParen 
+{            line 8 cols 31-31 is T_LeftBrace 
+int          line 9 cols 5-7 is T_Int 
+x            line 9 cols 9-9 is T_Identifier 
+=            line 9 cols 11-11 is T_Equal 
+1            line 9 cols 13-13 is T_IntConstant (value = 1)
+;            line 9 cols 14-14 is T_Semicolon 
+b            line 10 cols 5-5 is T_Identifier 
+=            line 10 cols 7-7 is T_Equal 
+false        line 10 cols 9-13 is T_BoolConstant (value = false)
+;            line 10 cols 14-14 is T_Semicolon 
+i            line 11 cols 5-5 is T_Identifier 
+++           line 11 cols 6-7 is T_Inc 
+;            line 11 cols 8-8 is T_Semicolon 
+}            line 12 cols 3-3 is T_RightBrace 
+}            line 13 cols 1-1 is T_RightBrace 

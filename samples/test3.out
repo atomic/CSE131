@@ -1,0 +1,17 @@
+int          line 2 cols 1-3 is T_Int 
+z            line 2 cols 5-5 is T_Identifier 
+;            line 2 cols 6-6 is T_Semicolon 
+void         line 4 cols 1-4 is T_Void 
+main         line 4 cols 6-9 is T_Identifier 
+(            line 4 cols 10-10 is T_LeftParen 
+)            line 4 cols 11-11 is T_RightParen 
+{            line 5 cols 1-1 is T_LeftBrace 
+x            line 7 cols 4-4 is T_Identifier 
+=            line 7 cols 6-6 is T_Equal 
+1            line 7 cols 8-8 is T_IntConstant (value = 1)
+;            line 7 cols 9-9 is T_Semicolon 
+y            line 8 cols 4-4 is T_Identifier 
+=            line 8 cols 6-6 is T_Equal 
+x            line 8 cols 8-8 is T_Identifier 
+;            line 8 cols 9-9 is T_Semicolon 
+}            line 9 cols 1-1 is T_RightBrace 

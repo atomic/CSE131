@@ -1,0 +1,49 @@
+public       line 1 cols 1-6 is T_Public 
+class        line 1 cols 8-12 is T_Class 
+ArithmeticExpr line 1 cols 14-27 is T_Identifier 
+{            line 1 cols 29-29 is T_LeftBrace 
+void         line 2 cols 3-6 is T_Void 
+foo          line 2 cols 8-10 is T_Identifier 
+(            line 2 cols 11-11 is T_LeftParen 
+)            line 2 cols 12-12 is T_RightParen 
+{            line 2 cols 14-14 is T_LeftBrace 
+int          line 3 cols 5-7 is T_Int 
+i            line 3 cols 9-9 is T_Identifier 
+;            line 3 cols 10-10 is T_Semicolon 
+int          line 4 cols 5-7 is T_Int 
+j            line 4 cols 9-9 is T_Identifier 
+;            line 4 cols 10-10 is T_Semicolon 
+i            line 6 cols 5-5 is T_Identifier 
++            line 6 cols 6-6 is T_Plus 
+2            line 6 cols 7-7 is T_IntConstant (value = 2)
+;            line 6 cols 8-8 is T_Semicolon 
+i            line 7 cols 5-5 is T_Identifier 
++            line 7 cols 6-6 is T_Plus 
+j            line 7 cols 7-7 is T_Identifier 
+;            line 7 cols 8-8 is T_Semicolon 
+i            line 9 cols 5-5 is T_Identifier 
+-            line 9 cols 6-6 is T_Dash 
+3            line 9 cols 7-7 is T_IntConstant (value = 3)
+;            line 9 cols 8-8 is T_Semicolon 
+i            line 10 cols 5-5 is T_Identifier 
+-            line 10 cols 6-6 is T_Dash 
+j            line 10 cols 7-7 is T_Identifier 
+;            line 10 cols 8-8 is T_Semicolon 
+i            line 12 cols 5-5 is T_Identifier 
+*            line 12 cols 6-6 is T_Star 
+1            line 12 cols 7-7 is T_IntConstant (value = 1)
+;            line 12 cols 8-8 is T_Semicolon 
+i            line 13 cols 5-5 is T_Identifier 
+*            line 13 cols 6-6 is T_Star 
+j            line 13 cols 7-7 is T_Identifier 
+;            line 13 cols 8-8 is T_Semicolon 
+i            line 15 cols 5-5 is T_Identifier 
+/            line 15 cols 6-6 is T_Slash 
+1            line 15 cols 7-7 is T_IntConstant (value = 1)
+;            line 15 cols 8-8 is T_Semicolon 
+i            line 16 cols 5-5 is T_Identifier 
+/            line 16 cols 6-6 is T_Slash 
+j            line 16 cols 7-7 is T_Identifier 
+;            line 16 cols 8-8 is T_Semicolon 
+}            line 18 cols 3-3 is T_RightBrace 
+}            line 19 cols 1-1 is T_RightBrace 

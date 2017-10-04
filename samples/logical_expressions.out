@@ -1,0 +1,36 @@
+void         line 1 cols 1-4 is T_Void 
+foo          line 1 cols 6-8 is T_Identifier 
+(            line 1 cols 9-9 is T_LeftParen 
+)            line 1 cols 10-10 is T_RightParen 
+{            line 1 cols 12-12 is T_LeftBrace 
+boolean      line 2 cols 3-9 is T_Bool 
+b            line 2 cols 11-11 is T_Identifier 
+;            line 2 cols 12-12 is T_Semicolon 
+boolean      line 3 cols 3-9 is T_Bool 
+b2           line 3 cols 11-12 is T_Identifier 
+;            line 3 cols 13-13 is T_Semicolon 
+b            line 5 cols 3-3 is T_Identifier 
+&&           line 5 cols 5-6 is T_And 
+true         line 5 cols 8-11 is T_BoolConstant (value = true)
+;            line 5 cols 12-12 is T_Semicolon 
+b            line 6 cols 3-3 is T_Identifier 
+&&           line 6 cols 5-6 is T_And 
+b2           line 6 cols 8-9 is T_Identifier 
+;            line 6 cols 10-10 is T_Semicolon 
+true         line 7 cols 3-6 is T_BoolConstant (value = true)
+&&           line 7 cols 8-9 is T_And 
+true         line 7 cols 11-14 is T_BoolConstant (value = true)
+;            line 7 cols 15-15 is T_Semicolon 
+b            line 9 cols 3-3 is T_Identifier 
+||           line 9 cols 5-6 is T_Or 
+true         line 9 cols 8-11 is T_BoolConstant (value = true)
+;            line 9 cols 12-12 is T_Semicolon 
+b            line 10 cols 3-3 is T_Identifier 
+||           line 10 cols 5-6 is T_Or 
+b2           line 10 cols 8-9 is T_Identifier 
+;            line 10 cols 10-10 is T_Semicolon 
+false        line 11 cols 3-7 is T_BoolConstant (value = false)
+||           line 11 cols 9-10 is T_Or 
+true         line 11 cols 12-15 is T_BoolConstant (value = true)
+;            line 11 cols 16-16 is T_Semicolon 
+}            line 12 cols 1-1 is T_RightBrace 

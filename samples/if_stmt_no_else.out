@@ -1,0 +1,16 @@
+void         line 1 cols 1-4 is T_Void 
+foo          line 1 cols 6-8 is T_Identifier 
+(            line 1 cols 9-9 is T_LeftParen 
+)            line 1 cols 10-10 is T_RightParen 
+{            line 1 cols 12-12 is T_LeftBrace 
+if           line 2 cols 3-4 is T_If 
+(            line 2 cols 6-6 is T_LeftParen 
+i            line 2 cols 7-7 is T_Identifier 
+)            line 2 cols 8-8 is T_RightParen 
+{            line 2 cols 10-10 is T_LeftBrace 
+i            line 3 cols 5-5 is T_Identifier 
+=            line 3 cols 7-7 is T_Equal 
+5            line 3 cols 9-9 is T_IntConstant (value = 5)
+;            line 3 cols 10-10 is T_Semicolon 
+}            line 4 cols 3-3 is T_RightBrace 
+}            line 5 cols 1-1 is T_RightBrace 
