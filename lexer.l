@@ -59,8 +59,11 @@ int currentLineNum, currentColNum;
  * -----------
  * To make our rules more readable, we establish some definitions here.
  */
+
 letters             ([A-Za-z])
 digits              ([0-9])
+whitespace          ([ \t\n])
+
 %% 
 
 "void"              { return T_Void;        }
@@ -88,7 +91,7 @@ digits              ([0-9])
 ">="       { return T_GreaterEqual; }
 "=="       { return T_EQ;           }
 "!="       { return T_NE;           }
-"&&"       { return T_And;         }
+"&&"       { return T_And;          }
 "||"       { return T_Or;           }
 "*="       { return T_MulAssign;    }
 "/="       { return T_DivAssign;    }
