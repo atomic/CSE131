@@ -9,6 +9,7 @@
 #include "location.h"
 #include "errors.h"
 #include <vector>
+#include <stdlib.h>
 using namespace std;
 
 #define TAB_SIZE 8
@@ -59,8 +60,8 @@ int currentLineNum, currentColNum;
  * -----------
  * To make our rules more readable, we establish some definitions here.
  */
-letters             ([A-Za-z])
-digits              ([0-9])
+CHARS               ([A-Za-z_])
+DIGITS              ([0-9])
 %% 
 
 "void"              { return T_Void;        }
@@ -113,7 +114,15 @@ digits              ([0-9])
 "private"  { return T_Private;      }
 "static"   { return T_Static;       }
 "class"    { return T_Class;        }
-{letters}({digits}|{letters})+  { return T_Identifier; }
+
+{CHARS}({DIGITS}|{CHARS})*  { 
+    // printf(yytext);
+    // printf("%d", yyleng);
+    strcpy(yylval.identifier, yytext);
+
+    // printf(" -- %s",yylval.identifier);
+    return T_Identifier;
+}
 
 [ t]+     ;
 \n          { currentLineNum++; currentColNum=1; }
