@@ -80,7 +80,7 @@ COMMENT_END         ("*/")
 {INLINE_COMMENT}.*
 {COMMENT_START}(.|\n)*{COMMENT_END}
 
-"bool"     { return T_Bool;         }
+"boolean"  { return T_Bool;         }
 "int"      { return T_Int;          }
 "while"    { return T_While;        }
 "break"    { return T_Break;        }
@@ -111,6 +111,11 @@ COMMENT_END         ("*/")
 ";"        { return T_Semicolon;    }
 "-"        { return T_Dash;         }
 "+"        { return T_Plus;         }
+
+{DIGITS}+ { 
+            yylval.integerConstant = atoi(yytext);
+            return T_IntConstant;   }
+
 "*"        { return T_Star;         }
 "/"        { return T_Slash;        }
 ","        { return T_Comma;        }
@@ -131,7 +136,6 @@ COMMENT_END         ("*/")
     // printf(" -- %s",yylval.identifier);
     return T_Identifier;
 }
-
 
 [ \t]+     ;
 \n          { currentLineNum++; currentColNum=1; }
