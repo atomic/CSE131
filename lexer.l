@@ -59,6 +59,8 @@ int currentLineNum, currentColNum;
  * -----------
  * To make our rules more readable, we establish some definitions here.
  */
+letters             ([A-Za-z])
+digits              ([0-9])
 %% 
 
 "void"              { return T_Void;        }
@@ -80,6 +82,7 @@ int currentLineNum, currentColNum;
 "for"      { return T_For;      }
 "if"       { return T_If;       }
 "return"   { return T_Return;   }
+{letters}({digits}|{letters})+  { return T_Identifier; }
 
 %%
 
