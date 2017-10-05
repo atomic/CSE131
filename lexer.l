@@ -65,20 +65,19 @@ DIGITS              ([0-9])
 INLINE_COMMENT      ("//")
 COMMENT_START       ("/*")
 COMMENT_END         ("*/")
+WHITESPACE          (" ")
+ILLEGAL_CHARS       ([\^~#@$'\\"!\.%|&])
 %% 
 
 "void"              { return T_Void;        }
-
 "true"|"false"      { yylval.boolConstant = (yytext[0] == 't');
-                         return T_BoolConstant; }
-
-[+\-]?[0-9]+     { 
-            yylval.integerConstant = atoi(yytext);
-            return T_IntConstant;
-}
+                      return T_BoolConstant; }
+{DIGITS}+           { yylval.integerConstant = atoi(yytext);
+                      return T_IntConstant; }
 
 {INLINE_COMMENT}.*
-{COMMENT_START}(.|\n)*{COMMENT_END}
+{COMMENT_START}.*
+.*{COMMENT_END}
 
 "boolean"  { return T_Bool;         }
 "int"      { return T_Int;          }
@@ -111,11 +110,6 @@ COMMENT_END         ("*/")
 ";"        { return T_Semicolon;    }
 "-"        { return T_Dash;         }
 "+"        { return T_Plus;         }
-
-{DIGITS}+ { 
-            yylval.integerConstant = atoi(yytext);
-            return T_IntConstant;   }
-
 "*"        { return T_Star;         }
 "/"        { return T_Slash;        }
 ","        { return T_Comma;        }
@@ -125,7 +119,7 @@ COMMENT_END         ("*/")
 "private"  { return T_Private;      }
 "static"   { return T_Static;       }
 "class"    { return T_Class;        }
-
+{ILLEGAL_CHARS}  { ReportError::UnrecogChar(&yylloc, yytext[0]); }
 
 
 {CHARS}({DIGITS}|{CHARS})*  { 
@@ -137,8 +131,9 @@ COMMENT_END         ("*/")
     return T_Identifier;
 }
 
-[ \t]+     ;
-\n          { currentLineNum++; currentColNum=1; }
+{WHITESPACE}
+\t            { currentColNum += (TAB_SIZE + 1) - (currentColNum % TAB_SIZE); }
+\n            { currentLineNum++; currentColNum = 1; }
 
 %%
 
