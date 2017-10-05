@@ -70,12 +70,11 @@ ILLEGAL_CHARS       ([\^~#@$'\\"!\.%|&])
 %x comment
 %% 
 
-"/*"         BEGIN(comment);
-
+"/*"                    BEGIN(comment);
+<comment>"*/"           BEGIN(INITIAL);
 <comment>[^*\n]+
 <comment>"*"+[^*/\n]*
 <comment>\n           { currentLineNum++; currentColNum = 1; }
-<comment>"*"+"/"      BEGIN(INITIAL);
 
 "void"                { return T_Void;         }
 "true"|"false"        { yylval.boolConstant = (yytext[0] == 't');
@@ -127,8 +126,8 @@ ILLEGAL_CHARS       ([\^~#@$'\\"!\.%|&])
 "<"        { return T_LeftAngle;    }
 ">"        { return T_RightAngle;   }
 
-{ILLEGAL_CHARS}  { ReportError::UnrecogChar(&yylloc, yytext[0]); }
-
+{ILLEGAL_CHARS}     { ReportError::UnrecogChar(&yylloc, yytext[0]); }
+<comment><<EOF>>    { ReportError::UntermComment(); yyterminate();  }
 
 {CHARS}({DIGITS}|{CHARS})*  { 
     strcpy(yylval.identifier, yytext);
