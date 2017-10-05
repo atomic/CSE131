@@ -16,7 +16,11 @@ function error_msg() {
 
 function compare() {
 	local samples_dir=samples/
-	./lexer < $samples_dir/$1.java > lexer.output
+	if [ $1 = "unrecognized_char" ] || [ $1 = "unterminated_comment" ]; then
+		./lexer < $samples_dir/$1.java 2> lexer.output
+	else
+		./lexer < $samples_dir/$1.java > lexer.output
+	fi
 	vimdiff lexer.output $samples_dir/$1.out
 	rm lexer.output
 }
