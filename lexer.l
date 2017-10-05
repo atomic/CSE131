@@ -83,7 +83,7 @@ ILLEGAL_CHARS       ([\^~#@$'\\"!\.%|&])
 {DIGITS}+             { yylval.integerConstant = atoi(yytext);
                         return T_IntConstant;  }
 
-"boolean"  { return T_Bool;         }
+"boolean"  { return T_Bool;         }       /* Keywords */
 "int"      { return T_Int;          }
 "while"    { return T_While;        }
 "break"    { return T_Break;        }
@@ -92,7 +92,12 @@ ILLEGAL_CHARS       ([\^~#@$'\\"!\.%|&])
 "for"      { return T_For;          }
 "if"       { return T_If;           }
 "return"   { return T_Return;       }
-"++"       { return T_Inc;          }
+"public"   { return T_Public;       }
+"private"  { return T_Private;      }
+"static"   { return T_Static;       }
+"class"    { return T_Class;        }
+
+"++"       { return T_Inc;          }       /* Operators */
 "--"       { return T_Dec;          }
 "<="       { return T_LessEqual;    }
 ">="       { return T_GreaterEqual; }
@@ -104,7 +109,12 @@ ILLEGAL_CHARS       ([\^~#@$'\\"!\.%|&])
 "/="       { return T_DivAssign;    }
 "+="       { return T_AddAssign;    }
 "-="       { return T_SubAssign;    }
-"("        { return T_LeftParen;    }
+"-"        { return T_Dash;         }       /* Single Operators */
+"+"        { return T_Plus;         }
+"*"        { return T_Star;         }
+"/"        { return T_Slash;        }
+
+"("        { return T_LeftParen;    }       /* Braces */
 ")"        { return T_RightParen;   }
 "["        { return T_LeftBracket;  }
 "]"        { return T_RightBracket; }
@@ -112,26 +122,16 @@ ILLEGAL_CHARS       ([\^~#@$'\\"!\.%|&])
 "}"        { return T_RightBrace;   }
 "="        { return T_Equal;        }
 ";"        { return T_Semicolon;    }
-"-"        { return T_Dash;         }
-"+"        { return T_Plus;         }
-"*"        { return T_Star;         }
-"/"        { return T_Slash;        }
-","        { return T_Comma;        }
+
+","        { return T_Comma;        }       /* Others */
 "<"        { return T_LeftAngle;    }
 ">"        { return T_RightAngle;   }
-"public"   { return T_Public;       }
-"private"  { return T_Private;      }
-"static"   { return T_Static;       }
-"class"    { return T_Class;        }
+
 {ILLEGAL_CHARS}  { ReportError::UnrecogChar(&yylloc, yytext[0]); }
 
 
 {CHARS}({DIGITS}|{CHARS})*  { 
-    // printf(yytext);
-    // printf("%d", yyleng);
     strcpy(yylval.identifier, yytext);
-
-    // printf(" -- %s",yylval.identifier);
     return T_Identifier;
 }
 
