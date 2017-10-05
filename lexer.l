@@ -67,17 +67,21 @@ COMMENT_START       ("/*")
 COMMENT_END         ("*/")
 WHITESPACE          (" ")
 ILLEGAL_CHARS       ([\^~#@$'\\"!\.%|&])
+%x comment
 %% 
+
+"/*"         BEGIN(comment);
+
+<comment>[^*\n]+
+<comment>"*"+[^*/\n]
+<comment>\n        { currentLineNum++; }
+<comment>"*"+"/"   BEGIN(INITIAL);
 
 "void"              { return T_Void;        }
 "true"|"false"      { yylval.boolConstant = (yytext[0] == 't');
                       return T_BoolConstant; }
 {DIGITS}+           { yylval.integerConstant = atoi(yytext);
                       return T_IntConstant; }
-
-{INLINE_COMMENT}.*
-{COMMENT_START}.*
-.*{COMMENT_END}
 
 "boolean"  { return T_Bool;         }
 "int"      { return T_Int;          }
@@ -131,6 +135,7 @@ ILLEGAL_CHARS       ([\^~#@$'\\"!\.%|&])
     return T_Identifier;
 }
 
+{INLINE_COMMENT}.*
 {WHITESPACE}
 \t            { currentColNum += (TAB_SIZE + 1) - (currentColNum % TAB_SIZE); }
 \n            { currentLineNum++; currentColNum = 1; }
