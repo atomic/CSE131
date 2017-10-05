@@ -73,15 +73,15 @@ ILLEGAL_CHARS       ([\^~#@$'\\"!\.%|&])
 "/*"         BEGIN(comment);
 
 <comment>[^*\n]+
-<comment>"*"+[^*/\n]
-<comment>\n        { currentLineNum++; }
-<comment>"*"+"/"   BEGIN(INITIAL);
+<comment>"*"+[^*/\n]*
+<comment>\n           { currentLineNum++; currentColNum = 1; }
+<comment>"*"+"/"      BEGIN(INITIAL);
 
-"void"              { return T_Void;        }
-"true"|"false"      { yylval.boolConstant = (yytext[0] == 't');
-                      return T_BoolConstant; }
-{DIGITS}+           { yylval.integerConstant = atoi(yytext);
-                      return T_IntConstant; }
+"void"                { return T_Void;         }
+"true"|"false"        { yylval.boolConstant = (yytext[0] == 't');
+                        return T_BoolConstant; }
+{DIGITS}+             { yylval.integerConstant = atoi(yytext);
+                        return T_IntConstant;  }
 
 "boolean"  { return T_Bool;         }
 "int"      { return T_Int;          }
