@@ -9,50 +9,50 @@ make clean
 make 
 
 function error_msg() {
-	echo "Miles Eli Jones rules! Also you broke the script."
-	echo "Exiting..."
-	exit 1
+    echo "Miles Eli Jones rules! Also you broke the script."
+    echo "Exiting..."
+    exit 1
 }
 
 function compare() {
-	local samples_dir=samples/
-	if [ $1 = "unrecognized_char" ] || [ $1 = "unterminated_comment" ]; then
-		./lexer < $samples_dir/$1.java 2> lexer.output
-	else
-		./lexer < $samples_dir/$1.java > lexer.output
-	fi
-	vimdiff lexer.output $samples_dir/$1.out
-	rm lexer.output
+    local samples_dir=samples/
+    if [ $1 = "unrecognized_char" ] || [ $1 = "unterminated_comment" ]; then
+        ./lexer < $samples_dir/$1.java 2> lexer.output
+    else
+        ./lexer < $samples_dir/$1.java > lexer.output
+    fi
+    vimdiff lexer.output $samples_dir/$1.out
+    rm lexer.output
 }
 
 function compare_all() {
-	mkdir -p ${MYSAMPLES}
+    mkdir -p ${MYSAMPLES}
 
-	for file in $(ls samples/*.java); do
+    for file in $(ls samples/*.java); do
 
-		filename=$(echo $file | cut -f1 -d '.' | cut -f2 -d '/')
+        filename=$(echo $file | cut -f1 -d '.' | cut -f2 -d '/')
 
-		if [ $filename = "unrecognized_char" ] || [ $filename = "unterminated_comment" ]; then
-			./lexer < $file 2> ${MYSAMPLES}/$filename.myout
-		else
-			./lexer < $file > ${MYSAMPLES}/$filename.myout
-		fi
+        if [ $filename = "unrecognized_char" ] || [ $filename = "unterminated_comment" ]; then
+            ./lexer < $file 2> ${MYSAMPLES}/$filename.myout
+        else
+            ./lexer < $file > ${MYSAMPLES}/$filename.myout
+        fi
 
-		if diff -s ${MYSAMPLES}/$filename.myout samples/$filename.out > /dev/null; then
-			echo "${TXT_GREEN}[PASSED]${TXT_RESET} $file"
-		else
-			echo "${TXT_RED}[FAILED]${TXT_RESET} $file"
-		fi
+        if diff -s ${MYSAMPLES}/$filename.myout samples/$filename.out > /dev/null; then
+            echo "${TXT_GREEN}[PASSED]${TXT_RESET} $file"
+        else
+            echo "${TXT_RED}[FAILED]${TXT_RESET} $file"
+        fi
 
-	done
+    done
 
-	rm -rf ${MYSAMPLES}
+    rm -rf ${MYSAMPLES}
 }
 
 while true; do
-	case "$1" in
-		-s | --single ) compare $2; break ;;
-		--all ) compare_all; break ;;
-		*     ) error_msg ;;
-	esac
+    case "$1" in
+        -s | --single ) compare $2; break ;;
+        --all ) compare_all; break ;;
+        *     ) error_msg ;;
+    esac
 done
