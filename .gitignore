@@ -51,6 +51,10 @@ Mkfile.old
 dkms.conf
 lex.yy.c
 lexer
+parser
+y.output
+y.tab.c
+y.tab.h
 
 # Our output files
 mysamples/

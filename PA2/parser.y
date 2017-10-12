@@ -92,6 +92,40 @@ void yyerror(const char *msg); // standard error-handling routine
 %type <integerConstant>  DeclList
 %type <integerConstant>  Decl
 %type <integerConstant>  single_declaration 
+%type <integerConstant>  function_definition 
+%type <integerConstant>  assignment_operator 
+%type <integerConstant>  expression 
+%type <integerConstant>  function_prototype 
+%type <integerConstant>  compound_statement_with_scope 
+%type <integerConstant>  function_prototype_header
+%type <integerConstant>  parameter_declaration_list
+%type <integerConstant>  parameter_declaration
+%type <integerConstant>  statement_list
+%type <integerConstant>  statement
+%type <integerConstant>  simple_statement
+%type <integerConstant>  expression_statement
+%type <integerConstant>  selection_statement
+%type <integerConstant>  iteration_statement
+%type <integerConstant>  return_statement
+%type <integerConstant>  decl_statement
+%type <integerConstant>  break_statement
+%type <integerConstant>  while_statement
+%type <integerConstant>  for_statement
+%type <integerConstant>  condition
+%type <integerConstant>  assignment_expression
+%type <integerConstant>  arithmetic_expression
+%type <integerConstant>  relational_expression
+%type <integerConstant>  equality_expression
+%type <integerConstant>  logical_expression
+%type <integerConstant>  unary_expression
+%type <integerConstant>  postfix_expression
+%type <integerConstant>  primary_expression
+%type <integerConstant>  func_call_expression
+%type <integerConstant>  func_call_header_with_parameters
+%type <integerConstant>  func_call_header_with_no_parameters
+%type <integerConstant>  function_identifier
+%type <integerConstant>  arg_list
+%type <integerConstant>  constant
 
 
 %%
@@ -116,15 +150,165 @@ DeclList  :    DeclList Decl
           ;
 
 Decl      :    single_declaration   
+          |    function_definition
           ;
 
-single_declaration : type_specifier T_Identifier T_Semicolon   
+single_declaration  : type_specifier T_Identifier T_Semicolon   
+                    | type_specifier T_Identifier assignment_operator expression T_Semicolon
+                    ;
 
-type_specifier     : T_Void     
-                   | T_Int      
-                   | T_Bool     
-                   ;
+type_specifier      : T_Void     
+                    | T_Int      
+                    | T_Bool     
+                    ;
 
+function_definition : function_prototype compound_statement_with_scope
+                    | function_prototype T_Semicolon
+                    ;
+
+function_prototype  : function_prototype_header T_RightParen
+                    ;
+
+function_prototype_header  : type_specifier T_Identifier T_LeftParen
+                           | type_specifier T_Identifier T_LeftParen parameter_declaration_list
+                           ;
+
+parameter_declaration_list : parameter_declaration_list T_Comma parameter_declaration
+                           | parameter_declaration
+                           ;
+
+parameter_declaration      : type_specifier T_Identifier
+                           ;
+
+compound_statement_with_scope : T_LeftBrace statement_list T_RightBrace
+                              | T_LeftBrace T_RightBrace
+                              ;
+
+statement_list        : statement_list statement
+                      | statement
+                      ;
+
+statement             : compound_statement_with_scope
+                      | simple_statement
+                      ;
+
+simple_statement      : expression_statement
+                      | selection_statement
+                      | iteration_statement
+                      | return_statement
+                      | decl_statement
+                      | break_statement
+                      ;
+
+expression_statement  : T_Semicolon
+                      | expression T_Semicolon
+                      ;
+
+selection_statement   : T_If T_LeftParen expression T_RightParen compound_statement_with_scope
+                      | T_If T_LeftParen expression T_RightParen compound_statement_with_scope T_Else compound_statement_with_scope
+                      ;
+
+iteration_statement   : while_statement
+                      | for_statement
+                      ;
+
+while_statement       : T_While T_LeftParen condition T_RightParen statement
+                      ;
+
+for_statement         : T_For T_LeftParen expression_statement expression_statement expression T_RightParen statement
+                      ;
+
+condition             : expression
+                      ;
+
+return_statement      : T_Return expression_statement
+                      ;
+
+decl_statement        : single_declaration
+                      ;
+
+break_statement       : T_Break T_Semicolon
+                      ;
+
+expression            : assignment_expression
+                      | arithmetic_expression
+                      | relational_expression
+                      | equality_expression
+                      | logical_expression
+                      | unary_expression
+                      ;
+
+assignment_expression : unary_expression assignment_operator expression
+                      ;
+
+assignment_operator   : T_Equal
+                      | T_MulAssign
+                      | T_DivAssign
+                      | T_AddAssign
+                      | T_SubAssign
+                      ;
+
+arithmetic_expression : expression T_Plus expression
+                      | expression T_Dash expression
+                      | expression T_Star expression
+                      | expression T_Slash expression
+                      ;
+
+relational_expression : expression T_LeftAngle expression
+                      | expression T_RightAngle expression
+                      | expression T_LessEqual expression
+                      | expression T_GreaterEqual expression
+                      ;
+
+equality_expression   : expression T_EQ expression
+                      | expression T_NE expression
+                      ;
+
+logical_expression    : expression T_And expression
+                      | expression T_Or expression
+                      ;
+
+postfix_expression    : primary_expression
+                      | postfix_expression T_Inc
+                      | postfix_expression T_Dec
+                      | func_call_expression
+                      ;
+
+func_call_expression  : func_call_header_with_parameters T_RightParen
+                      | func_call_header_with_no_parameters T_RightParen
+                      ;
+
+func_call_header_with_no_parameters : function_identifier T_LeftParen T_Void
+                                    | function_identifier T_LeftParen
+                                    ;
+
+func_call_header_with_parameters    : function_identifier T_LeftParen arg_list
+                                    ;
+
+arg_list              : assignment_expression
+                      | arg_list T_Comma assignment_expression
+                      | primary_expression
+                      | arg_list T_Comma primary_expression
+                      ;
+
+function_identifier   : T_Identifier
+                      ;
+
+primary_expression    : T_Identifier
+                      | constant
+                      | T_LeftParen expression T_RightParen
+                      ;
+
+unary_expression      : postfix_expression
+                      | T_Inc unary_expression
+                      | T_Dec unary_expression
+                      | T_Plus unary_expression
+                      | T_Dash unary_expression
+                      ;
+
+constant              : T_IntConstant
+                      | T_BoolConstant
+                      ;
 %%
 
 /* The closing %% above marks the end of the Rules section and the beginning

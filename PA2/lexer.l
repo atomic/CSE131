@@ -9,28 +9,12 @@
 #include "location.h"
 #include "errors.h"
 #include <vector>
-#include <stdlib.h>
+#include "utility.h"
+#include "parser.h"
 using namespace std;
 
 #define TAB_SIZE 8
-
-/* Global variable: yylval
- * -----------------------
- * This global variable is how we get attribute information about the token
- * just scanned to the client. The scanner sets the global variable
- * appropriately and since it's global the client can just read it.  In the
- * future, this variable will be declared for us in the y.tab.c file
- * produced by Yacc, but for now, we declare it manually.
- */
-YYSTYPE yylval;  // manually declared for pp1, later Yacc provides
-
-/* Global variable: yylloc
- * -----------------------
- * This global variable is how we get position information about the token
- * just scanned to the client. (Operates similarly to yylval above)
- */
-struct yyltype yylloc; // manually dclared for pp1, later Yacc provides
-
+vector<const char*> savedLines;
 
 /* Macro: YY_USER_ACTION 
  * ---------------------
@@ -68,7 +52,13 @@ COMMENT_END         ("*/")
 WHITESPACE          (" ")
 ILLEGAL_CHARS       ([\^~#@$'\\"!\.%|&])
 %x comment
+%x COPY
+%option stack
 %% 
+
+<COPY>.*              { savedLines.push_back(strdup(yytext)); currentColNum = 1;
+                        yy_pop_state(); yyless(0); }
+<COPY><<EOF>>         { yy_pop_state();            }
 
 "/*"                    BEGIN(comment);
 <comment>"*/"           BEGIN(INITIAL);
@@ -158,6 +148,7 @@ void InitLexer()
     yy_flex_debug = false;
     currentLineNum = 1;
     currentColNum = 1;
+    yy_push_state(COPY);
 }
 
 /* Function: DoBeforeEachAction()
@@ -175,35 +166,14 @@ static void DoBeforeEachAction()
     currentColNum += yyleng;
 }
 
-static void PrintOneToken(TokenType token, const char *text, YYSTYPE value,
-                          yyltype loc)
-{
-  char buffer[] = {'\'', (char)token, '\'', '\0'};
-  const char *name = token >= T_Void ? gTokenNames[token - T_Void] : buffer;
-
-  printf("%-12s line %d cols %d-%d is %s ", text,
-       loc.first_line, loc.first_column, loc.last_column, name);
-
-  switch(token) {
-    case T_IntConstant:     
-      printf("(value = %d)\n", value.integerConstant); break;
-    case T_BoolConstant:    
-      printf("(value = %s)\n", value.boolConstant ? "true" : "false"); break;
-    case T_Identifier:
-  if (strcmp(text, value.identifier)) {
-    printf("(truncated to %s)\n", value.identifier);
-    break;
-  }
-    default:
-      printf("\n"); break;
-  }
-}
-
-int main() {
-    InitLexer();
-    TokenType token;
-    while ((token = (TokenType)yylex()) != 0) {
-        PrintOneToken(token, yytext, yylval, yylloc);
-    }
-    return 0;
-}
+/* Function: GetLineNumbered()
+ * ---------------------------
+ * Returns string with contents of line numbered n or NULL if the
+ * contents of that line are not available. Our scanner copies each line scanned
+ * and appends each to a list so we can later retrieve them to report the
+ * context for errors.
+ */
+ const char *GetLineNumbered(int num) {
+     if (num <= 0 || num > savedLines.size()) return NULL;
+     return savedLines[num - 1];
+ }
