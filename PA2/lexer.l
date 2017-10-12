@@ -56,9 +56,16 @@ ILLEGAL_CHARS       ([\^~#@$'\\"!\.%|&])
 %option stack
 %% 
 
-<COPY>.*              { savedLines.push_back(strdup(yytext)); currentColNum = 1;
-                        yy_pop_state(); yyless(0); }
-<COPY><<EOF>>         { yy_pop_state();            }
+<COPY>.*              { savedLines.push_back(strdup(yytext)); 
+                        currentColNum = 1;
+                        yy_pop_state(); 
+                        yyless(0);      }
+<COPY><<EOF>>         { yy_pop_state(); }
+
+<*>\n                 { currentLineNum++; 
+                        currentColNum = 1;
+                        if (YYSTATE == COPY) savedLines.push_back("");
+                        else yy_push_state(COPY); }
 
 "/*"                    BEGIN(comment);
 <comment>"*/"           BEGIN(INITIAL);
@@ -127,7 +134,6 @@ ILLEGAL_CHARS       ([\^~#@$'\\"!\.%|&])
 {INLINE_COMMENT}.*
 {WHITESPACE}
 \t            { currentColNum += (TAB_SIZE + 1) - (currentColNum % TAB_SIZE); }
-\n            { currentLineNum++; currentColNum = 1; }
 
 %%
 
