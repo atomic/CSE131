@@ -1,0 +1,6 @@
+
+*** Error line 2.
+    if (a < b {
+              ^
+*** syntax error
+

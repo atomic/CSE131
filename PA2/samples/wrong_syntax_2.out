@@ -1,0 +1,6 @@
+
+*** Error line 1.
+booolean foo() {
+^^^^^^^^
+*** syntax error
+

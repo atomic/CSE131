@@ -1,0 +1,6 @@
+
+*** Error line 1.
+int foo(var1) {
+        ^^^^
+*** syntax error
+

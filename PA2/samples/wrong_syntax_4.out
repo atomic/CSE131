@@ -1,0 +1,6 @@
+
+*** Error line 2.
+    int int a;
+        ^^^
+*** syntax error
+
