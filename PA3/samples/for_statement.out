@@ -1,0 +1,66 @@
+
+   Program: 
+  1   FnDecl: 
+         (return type) Type: void
+  1      Identifier: foo
+         (body) StmtBlock: 
+  2         DeclStmt: 
+  2            VarDecl: 
+                  Type: int
+  2               Identifier: f
+  2               (initializer) IntConstant: 4
+  3         DeclStmt: 
+  3            VarDecl: 
+                  Type: boolean
+  3               Identifier: b
+  3               (initializer) BoolConstant: false
+            ForStmt: 
+  5            (init) AssignExpr: 
+  5               VarExpr: 
+  5                  Identifier: f
+  5               Operator: =
+  5               IntConstant: 1
+  5            (test) EqualityExpr: 
+  5               VarExpr: 
+  5                  Identifier: b
+  5               Operator: !=
+  5               BoolConstant: true
+  5            (step) PostfixExpr: 
+  5               VarExpr: 
+  5                  Identifier: f
+  5               Operator: ++
+  6            (body) AssignExpr: 
+  6               VarExpr: 
+  6                  Identifier: b
+  6               Operator: =
+  6               BoolConstant: false
+            ForStmt: 
+  8            (init) AssignExpr: 
+  8               VarExpr: 
+  8                  Identifier: f
+  8               Operator: =
+  8               IntConstant: 1
+  8            (test) EqualityExpr: 
+  8               VarExpr: 
+  8                  Identifier: b
+  8               Operator: !=
+  8               BoolConstant: true
+  8            (step) PostfixExpr: 
+  8               VarExpr: 
+  8                  Identifier: f
+  8               Operator: ++
+               (body) StmtBlock: 
+  9               DeclStmt: 
+  9                  VarDecl: 
+                        Type: int
+  9                     Identifier: x
+  9                     (initializer) IntConstant: 1
+ 10               AssignExpr: 
+ 10                  VarExpr: 
+ 10                     Identifier: b
+ 10                  Operator: =
+ 10                  BoolConstant: false
+ 11               PostfixExpr: 
+ 11                  VarExpr: 
+ 11                     Identifier: i
+ 11                  Operator: ++

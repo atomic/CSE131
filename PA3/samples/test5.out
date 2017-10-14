@@ -1,0 +1,6 @@
+
+   Program: 
+  3   FnDecl: 
+         (return type) Type: void
+  3      Identifier: main
+         (body) StmtBlock: 

@@ -1,0 +1,20 @@
+
+   Program: 
+  2   VarDecl: 
+         Type: int
+  2      Identifier: z
+  4   FnDecl: 
+         (return type) Type: void
+  4      Identifier: main
+         (body) StmtBlock: 
+  7         AssignExpr: 
+  7            VarExpr: 
+  7               Identifier: x
+  7            Operator: =
+  7            IntConstant: 1
+  8         AssignExpr: 
+  8            VarExpr: 
+  8               Identifier: y
+  8            Operator: =
+  8            VarExpr: 
+  8               Identifier: x

@@ -1,0 +1,8 @@
+
+   Program: 
+  1   VarDecl: 
+         Type: int
+  1      Identifier: var1
+  2   VarDecl: 
+         Type: boolean
+  2      Identifier: var2

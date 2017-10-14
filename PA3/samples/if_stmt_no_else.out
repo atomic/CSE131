@@ -1,0 +1,15 @@
+
+   Program: 
+  1   FnDecl: 
+         (return type) Type: void
+  1      Identifier: foo
+         (body) StmtBlock: 
+            IfStmt: 
+  2            (test) VarExpr: 
+  2               Identifier: i
+               (then) StmtBlock: 
+  3               AssignExpr: 
+  3                  VarExpr: 
+  3                     Identifier: i
+  3                  Operator: =
+  3                  IntConstant: 5

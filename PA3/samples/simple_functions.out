@@ -1,0 +1,47 @@
+
+   Program: 
+  1   FnDecl: 
+         (return type) Type: void
+  1      Identifier: foo
+         (body) StmtBlock: 
+  2         DeclStmt: 
+  2            VarDecl: 
+                  Type: int
+  2               Identifier: i
+  3         DeclStmt: 
+  3            VarDecl: 
+                  Type: boolean
+  3               Identifier: b
+  6   FnDecl: 
+         (return type) Type: void
+  6      Identifier: foo2
+  6      (formals) VarDecl: 
+            Type: int
+  6         Identifier: param1
+         (body) StmtBlock: 
+  7         DeclStmt: 
+  7            VarDecl: 
+                  Type: int
+  7               Identifier: i
+  8         DeclStmt: 
+  8            VarDecl: 
+                  Type: boolean
+  8               Identifier: b
+ 11   FnDecl: 
+         (return type) Type: void
+ 11      Identifier: foo3
+ 11      (formals) VarDecl: 
+            Type: int
+ 11         Identifier: param1
+ 11      (formals) VarDecl: 
+            Type: int
+ 11         Identifier: param2
+         (body) StmtBlock: 
+ 12         DeclStmt: 
+ 12            VarDecl: 
+                  Type: int
+ 12               Identifier: i
+ 13         DeclStmt: 
+ 13            VarDecl: 
+                  Type: boolean
+ 13               Identifier: b

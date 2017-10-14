@@ -1,0 +1,42 @@
+
+   Program: 
+  1   VarDecl: 
+         Type: int
+  1      Identifier: i
+  2   VarDecl: 
+         Type: boolean
+  2      Identifier: b
+  4   FnDecl: 
+         (return type) Type: void
+  4      Identifier: foo
+         (body) StmtBlock: 
+  5         DeclStmt: 
+  5            VarDecl: 
+                  Type: int
+  5               Identifier: i2
+  6         DeclStmt: 
+  6            VarDecl: 
+                  Type: boolean
+  6               Identifier: b2
+  8         AssignExpr: 
+  8            VarExpr: 
+  8               Identifier: i
+  8            Operator: =
+  8            IntConstant: 1
+  9         AssignExpr: 
+  9            VarExpr: 
+  9               Identifier: i
+  9            Operator: =
+  9            VarExpr: 
+  9               Identifier: i2
+ 11         AssignExpr: 
+ 11            VarExpr: 
+ 11               Identifier: b
+ 11            Operator: =
+ 11            BoolConstant: true
+ 12         AssignExpr: 
+ 12            VarExpr: 
+ 12               Identifier: b2
+ 12            Operator: =
+ 12            VarExpr: 
+ 12               Identifier: b

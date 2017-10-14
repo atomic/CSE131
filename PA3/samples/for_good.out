@@ -1,0 +1,36 @@
+
+   Program: 
+  1   FnDecl: 
+         (return type) Type: void
+  1      Identifier: main
+         (body) StmtBlock: 
+  2         DeclStmt: 
+  2            VarDecl: 
+                  Type: int
+  2               Identifier: x
+  3         DeclStmt: 
+  3            VarDecl: 
+                  Type: int
+  3               Identifier: y
+            ForStmt: 
+  4            (init) AssignExpr: 
+  4               VarExpr: 
+  4                  Identifier: x
+  4               Operator: =
+  4               IntConstant: 0
+  4            (test) RelationalExpr: 
+  4               VarExpr: 
+  4                  Identifier: x
+  4               Operator: <
+  4               IntConstant: 10
+  4            (step) PostfixExpr: 
+  4               VarExpr: 
+  4                  Identifier: x
+  4               Operator: ++
+               (body) StmtBlock: 
+  5               AssignExpr: 
+  5                  VarExpr: 
+  5                     Identifier: y
+  5                  Operator: =
+  5                  VarExpr: 
+  5                     Identifier: x

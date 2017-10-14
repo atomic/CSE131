@@ -1,0 +1,18 @@
+
+   Program: 
+  1   FnDecl: 
+         (return type) Type: void
+  1      Identifier: main
+         (body) StmtBlock: 
+  2         DeclStmt: 
+  2            VarDecl: 
+                  Type: int
+  2               Identifier: x
+            WhileStmt: 
+  3            (test) IntConstant: 100
+               (body) StmtBlock: 
+  4               PostfixExpr: 
+  4                  VarExpr: 
+  4                     Identifier: x
+  4                  Operator: ++
+  5               BreakStmt: 

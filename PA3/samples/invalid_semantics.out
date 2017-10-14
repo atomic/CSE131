@@ -1,0 +1,25 @@
+
+   Program: 
+  1   VarDecl: 
+         Type: int
+  1      Identifier: i
+  3   FnDecl: 
+         (return type) Type: int
+  3      Identifier: main
+         (body) StmtBlock: 
+  5         DeclStmt: 
+  5            VarDecl: 
+                  Type: boolean
+  5               Identifier: b
+  5               (initializer) IntConstant: 4
+            IfStmt: 
+  6            (test) ArithmeticExpr: 
+  6               IntConstant: 1
+  6               Operator: *
+  6               BoolConstant: true
+               (then) StmtBlock: 
+  7               ArithmeticExpr: 
+  7                  VarExpr: 
+  7                     Identifier: b
+  7                  Operator: +
+  7                  IntConstant: 4

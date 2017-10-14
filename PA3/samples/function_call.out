@@ -1,0 +1,38 @@
+
+   Program: 
+  1   FnDecl: 
+         (return type) Type: void
+  1      Identifier: foo
+         (body) StmtBlock: 
+  2         ReturnStmt: 
+  2            IntConstant: 5
+  5   FnDecl: 
+         (return type) Type: void
+  5      Identifier: main
+         (body) StmtBlock: 
+  6         DeclStmt: 
+  6            VarDecl: 
+                  Type: int
+  6               Identifier: x
+  7         Call: 
+  7            Identifier: foo
+  7            (actuals) AssignExpr: 
+  7               VarExpr: 
+  7                  Identifier: x
+  7               Operator: =
+  7               IntConstant: 5
+  8         Call: 
+  8            Identifier: foo1
+  8            (actuals) IntConstant: 5
+  9         Call: 
+  9            Identifier: foo2
+  9            (actuals) IntConstant: 5
+  9            (actuals) AssignExpr: 
+  9               VarExpr: 
+  9                  Identifier: x
+  9               Operator: =
+  9               IntConstant: 10
+  9            (actuals) IntConstant: 2
+ 10         ReturnStmt: 
+ 10            VarExpr: 
+ 10               Identifier: x

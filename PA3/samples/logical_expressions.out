@@ -1,0 +1,44 @@
+
+   Program: 
+  1   FnDecl: 
+         (return type) Type: void
+  1      Identifier: foo
+         (body) StmtBlock: 
+  2         DeclStmt: 
+  2            VarDecl: 
+                  Type: boolean
+  2               Identifier: b
+  3         DeclStmt: 
+  3            VarDecl: 
+                  Type: boolean
+  3               Identifier: b2
+  5         LogicalExpr: 
+  5            VarExpr: 
+  5               Identifier: b
+  5            Operator: &&
+  5            BoolConstant: true
+  6         LogicalExpr: 
+  6            VarExpr: 
+  6               Identifier: b
+  6            Operator: &&
+  6            VarExpr: 
+  6               Identifier: b2
+  7         LogicalExpr: 
+  7            BoolConstant: true
+  7            Operator: &&
+  7            BoolConstant: true
+  9         LogicalExpr: 
+  9            VarExpr: 
+  9               Identifier: b
+  9            Operator: ||
+  9            BoolConstant: true
+ 10         LogicalExpr: 
+ 10            VarExpr: 
+ 10               Identifier: b
+ 10            Operator: ||
+ 10            VarExpr: 
+ 10               Identifier: b2
+ 11         LogicalExpr: 
+ 11            BoolConstant: false
+ 11            Operator: ||
+ 11            BoolConstant: true

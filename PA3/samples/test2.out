@@ -1,0 +1,11 @@
+
+   Program: 
+  1   VarDecl: 
+         Type: int
+  1      Identifier: var1
+  1      (initializer) ArithmeticExpr: 
+  1         VarExpr: 
+  1            Identifier: a
+  1         Operator: +
+  1         VarExpr: 
+  1            Identifier: b

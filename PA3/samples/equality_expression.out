@@ -1,0 +1,36 @@
+
+   Program: 
+  1   FnDecl: 
+         (return type) Type: void
+  1      Identifier: foo
+         (body) StmtBlock: 
+  2         DeclStmt: 
+  2            VarDecl: 
+                  Type: int
+  2               Identifier: f
+  3         DeclStmt: 
+  3            VarDecl: 
+                  Type: int
+  3               Identifier: i2
+  5         EqualityExpr: 
+  5            VarExpr: 
+  5               Identifier: f
+  5            Operator: ==
+  5            IntConstant: 2
+  6         EqualityExpr: 
+  6            VarExpr: 
+  6               Identifier: f
+  6            Operator: ==
+  6            VarExpr: 
+  6               Identifier: i2
+  8         EqualityExpr: 
+  8            VarExpr: 
+  8               Identifier: f
+  8            Operator: !=
+  8            IntConstant: 3
+  9         EqualityExpr: 
+  9            VarExpr: 
+  9               Identifier: f
+  9            Operator: !=
+  9            VarExpr: 
+  9               Identifier: i2

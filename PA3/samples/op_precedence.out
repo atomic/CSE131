@@ -1,0 +1,46 @@
+
+   Program: 
+  1   FnDecl: 
+         (return type) Type: void
+  1      Identifier: main
+         (body) StmtBlock: 
+  3         DeclStmt: 
+  3            VarDecl: 
+                  Type: int
+  3               Identifier: x
+  4         DeclStmt: 
+  4            VarDecl: 
+                  Type: int
+  4               Identifier: y
+  5         DeclStmt: 
+  5            VarDecl: 
+                  Type: int
+  5               Identifier: z
+  7         AssignExpr: 
+  7            VarExpr: 
+  7               Identifier: x
+  7            Operator: =
+  7            ArithmeticExpr: 
+  7               VarExpr: 
+  7                  Identifier: x
+  7               Operator: +
+  7               ArithmeticExpr: 
+  7                  VarExpr: 
+  7                     Identifier: y
+  7                  Operator: /
+  7                  VarExpr: 
+  7                     Identifier: z
+  8         AssignExpr: 
+  8            VarExpr: 
+  8               Identifier: x
+  8            Operator: =
+  8            ArithmeticExpr: 
+  8               ArithmeticExpr: 
+  8                  VarExpr: 
+  8                     Identifier: x
+  8                  Operator: /
+  8                  VarExpr: 
+  8                     Identifier: y
+  8               Operator: +
+  8               VarExpr: 
+  8                  Identifier: z

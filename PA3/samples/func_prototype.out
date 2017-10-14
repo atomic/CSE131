@@ -1,0 +1,23 @@
+
+   Program: 
+  1   FnDecl: 
+         (return type) Type: void
+  1      Identifier: foo
+  2   FnDecl: 
+         (return type) Type: int
+  2      Identifier: bar
+  2      (formals) VarDecl: 
+            Type: int
+  2         Identifier: i
+  3   FnDecl: 
+         (return type) Type: boolean
+  3      Identifier: baz
+  3      (formals) VarDecl: 
+            Type: int
+  3         Identifier: i
+  3      (formals) VarDecl: 
+            Type: int
+  3         Identifier: f
+  3      (formals) VarDecl: 
+            Type: boolean
+  3         Identifier: b
