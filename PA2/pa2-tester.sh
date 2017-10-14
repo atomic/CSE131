@@ -11,7 +11,7 @@ if [ ! -f "parser" ]; then
 fi
 
 function error_msg() {
-    echo "ERROR PANIC MODE"
+    echo "PANIC PANIC PANIC"
     echo "Exiting..."
     exit 1
 }
@@ -30,11 +30,7 @@ function compare_all() {
 
         filename=$(echo $file | cut -f1 -d '.' | cut -f2 -d '/')
 
-        #if [ $filename = "unrecognized_char" ] || [ $filename = "unterminated_comment" ]; then
-            #./lexer < $file 2> ${MYSAMPLES}/$filename.out
-        #else
         ./parser < $file > ${MYSAMPLES}/$filename.out 2>&1
-        #fi
 
         if diff -s ${MYSAMPLES}/$filename.out samples/$filename.out > /dev/null; then
             echo "${TXT_GREEN}[PASSED]${TXT_RESET} $file"

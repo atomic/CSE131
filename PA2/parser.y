@@ -92,6 +92,7 @@ void yyerror(const char *msg); // standard error-handling routine
 %type <integerConstant>  DeclList
 %type <integerConstant>  Decl
 %type <integerConstant>  single_declaration 
+%type <integerConstant>  type_specifier 
 %type <integerConstant>  function_definition 
 %type <integerConstant>  assignment_operator 
 %type <integerConstant>  expression 
