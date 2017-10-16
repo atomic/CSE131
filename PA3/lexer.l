@@ -71,7 +71,6 @@ ILLEGAL_CHARS       ([\^~#@$'\\"!\.%|&])
 <comment>"*/"           BEGIN(INITIAL);
 <comment>[^*\n]+
 <comment>"*"+[^*/\n]*
-<comment>\n           { currentLineNum++; currentColNum = 1; }
 
 "void"                { return T_Void;         }
 "true"|"false"        { yylval.boolConstant = (yytext[0] == 't');

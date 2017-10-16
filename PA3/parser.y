@@ -45,7 +45,8 @@ void yyerror(const char *msg); // standard error-handling routine
 
     Type *varType;
     VarDecl *varDecl;
-
+    List<VarDecl*> *varDeclList;
+    FnDecl *fnDecl;
     Decl *decl;
     List<Decl*> *declList;
 
@@ -54,6 +55,7 @@ void yyerror(const char *msg); // standard error-handling routine
 
     List<Stmt*> *stmtList;
     Stmt *stmt;
+    StmtBlock *stmtBlock;
 
     ReturnStmt *returnStmt;
     BreakStmt *breakStmt;
@@ -62,6 +64,13 @@ void yyerror(const char *msg); // standard error-handling routine
     LoopStmt *loopStmt;
     ForStmt *forStmt;
     WhileStmt *whileStmt;
+    IfStmt *ifStmt;
+
+    AssignExpr *assignExpr;
+    ArithmeticExpr *arithExpr;
+    RelationalExpr *relExpr;
+    LogicalExpr *logicalExpr;
+    EqualityExpr *equalityExpr;
 }
 
 /* Tokens
@@ -111,42 +120,42 @@ void yyerror(const char *msg); // standard error-handling routine
  */
 %type <declList>         DeclList
 %type <decl>             Decl
-%type <varDecl>          single_declaration 
-%type <varType>          type_specifier
-%type <integerConstant>  function_definition 
-%type <oper>             assignment_operator 
-%type <expr>             expression 
-%type <integerConstant>  function_prototype 
-%type <integerConstant>  compound_statement_with_scope 
-%type <integerConstant>  function_prototype_header
-%type <integerConstant>  parameter_declaration_list
-%type <integerConstant>  parameter_declaration
+%type <varDecl>          SingleDecl 
+%type <varType>          TypeSpecifier
+%type <fnDecl>           FuncDefinition 
+%type <oper>             AssignmentOper 
+%type <expr>             Expr 
+%type <fnDecl>           FuncPrototype 
+%type <stmtBlock>        CompoundStmtWithScope 
+%type <fnDecl>           FuncPrototypeHeader
+%type <varDeclList>      ParameterDeclList
+%type <varDecl>          ParameterDecl
 %type <stmtList>         statement_list
 %type <stmt>             statement
 %type <integerConstant>  simple_statement
-%type <expr>             expression_statement
-%type <integerConstant>  selection_statement
-%type <loopStmt>         iteration_statement
-%type <returnStmt>       return_statement
+%type <expr>             ExprStmt
+%type <ifStmt>           SelectionStmt
+%type <loopStmt>         IterationStmt
+%type <returnStmt>       ReturnStmt
 %type <declStmt>         decl_statement
-%type <breakStmt>        break_statement
-%type <whileStmt>        while_statement
+%type <breakStmt>        BreakStmt
+%type <whileStmt>        WhileStmt
 %type <forStmt>          for_statement
 %type <expr>             condition
-%type <integerConstant>  assignment_expression
-%type <integerConstant>  arithmetic_expression
-%type <integerConstant>  relational_expression
-%type <integerConstant>  equality_expression
-%type <integerConstant>  logical_expression
-%type <integerConstant>  unary_expression
-%type <integerConstant>  postfix_expression
-%type <integerConstant>  primary_expression
+%type <assignExpr>       AssignmentExpr
+%type <arithExpr>        ArithmeticExpr
+%type <relExpr>          RelationalExpr
+%type <equalityExpr>     EqualityExpr
+%type <logicalExpr>      LogicalExpr
+%type <expr>             UnaryExpr
+%type <expr>             PostfixExpr
+%type <expr>             PrimaryExpr
 %type <integerConstant>  func_call_expression
 %type <integerConstant>  func_call_header_with_parameters
 %type <integerConstant>  func_call_header_with_no_parameters
-%type <integerConstant>  function_identifier
+%type <integerConstant>  FuncIdentifier
 %type <integerConstant>  arg_list
-%type <integerConstant>  constant
+%type <expr>             constant
 
 
 %%
@@ -171,40 +180,51 @@ DeclList  :    DeclList Decl       { ($$=$1)->Append($2); }
           |    Decl                { ($$ = new List<Decl*>)->Append($1); } 
           ;
 
-Decl      :    single_declaration  { $$ = $1; } 
-          |    function_definition
+Decl      :    SingleDecl          { $$ = $1; } 
+          |    FuncDefinition      { $$ = $1; }
           ;
 
-single_declaration  : type_specifier T_Identifier T_Semicolon   { $$ = new VarDecl(new Identifier(@2, $2), $1); }
-                    | type_specifier T_Identifier assignment_operator expression T_Semicolon
-                    ;
+SingleDecl : TypeSpecifier T_Identifier T_Semicolon   
+             { $$ = new VarDecl(new Identifier(@2, $2), $1); }
+           | TypeSpecifier T_Identifier AssignmentOper Expr T_Semicolon
+             { $$ = new VarDecl(new Identifier(@2, $2), $1, $4); }
+           ;
 
-type_specifier      : T_Void     { $$ = Type::voidType; } 
-                    | T_Int      { $$ = Type::intType; }
-                    | T_Bool     { $$ = Type::boolType; } 
-                    ;
+TypeSpecifier         : T_Void     { $$ = Type::voidType; } 
+                      | T_Int      { $$ = Type::intType; }
+                      | T_Bool     { $$ = Type::boolType; } 
+                      ;
 
-function_definition : function_prototype compound_statement_with_scope
-                    | function_prototype T_Semicolon
-                    ;
+FuncDefinition        : FuncPrototype CompoundStmtWithScope
+                        { ($$=$1)->SetFunctionBody($2); }
+                      | FuncPrototype T_Semicolon
+                        { $$ = $1; }
+                      ;
 
-function_prototype  : function_prototype_header T_RightParen
-                    ;
+FuncPrototype         : FuncPrototypeHeader T_RightParen
+                        { $$ = $1; }
+                      ;
 
-function_prototype_header  : type_specifier T_Identifier T_LeftParen
-                           | type_specifier T_Identifier T_LeftParen parameter_declaration_list
-                           ;
+FuncPrototypeHeader   : TypeSpecifier T_Identifier T_LeftParen
+                        { $$ = new FnDecl(new Identifier(@2, $2), $1, new List<VarDecl*>); }
+                      | TypeSpecifier T_Identifier T_LeftParen ParameterDeclList
+                        { $$ = new FnDecl(new Identifier(@2, $2), $1, $4); }
+                      ;
 
-parameter_declaration_list : parameter_declaration_list T_Comma parameter_declaration
-                           | parameter_declaration
-                           ;
+ParameterDeclList     : ParameterDeclList T_Comma ParameterDecl
+                        { ($$=$1)->Append($3); }
+                      | ParameterDecl
+                        { ($$ = new List<VarDecl*>)->Append($1); }
+                      ;
 
-parameter_declaration      : type_specifier T_Identifier
-                           ;
+ParameterDecl         : TypeSpecifier T_Identifier
+                        { $$ = new VarDecl(new Identifier(@2, $2), $1); }
+                      ;
 
-compound_statement_with_scope : T_LeftBrace statement_list T_RightBrace
-                              | T_LeftBrace T_RightBrace
-                              ;
+CompoundStmtWithScope : T_LeftBrace statement_list T_RightBrace
+                        { $$ = new StmtBlock($2); }
+                      | T_LeftBrace T_RightBrace
+                      ;
 
 statement_list        : statement_list statement    
                         { ($$=$1)->Append($2); }
@@ -212,142 +232,166 @@ statement_list        : statement_list statement
                         { ($$ = new List<Stmt*>)->Append($1); }
                       ;
 
-statement             : compound_statement_with_scope
+statement             : CompoundStmtWithScope
+                        { $$ = $1; }
                       | simple_statement
+                        { $$ = $1; }
                       ;
 
-simple_statement      : expression_statement
-                      | selection_statement
-                      | iteration_statement
-                      | return_statement
+simple_statement      : ExprStmt
+                      | SelectionStmt
+                      | IterationStmt
+                      | ReturnStmt
                       | decl_statement
-                      | break_statement
+                      | BreakStmt
                       ;
 
-expression_statement  : T_Semicolon
-                      | expression T_Semicolon
-                      ;
+ExprStmt       : T_Semicolon
+               | Expr T_Semicolon
+               ;
 
-selection_statement   : T_If T_LeftParen expression T_RightParen compound_statement_with_scope
-                      | T_If T_LeftParen expression T_RightParen compound_statement_with_scope T_Else compound_statement_with_scope
-                      ;
+SelectionStmt  : T_If T_LeftParen Expr T_RightParen CompoundStmtWithScope
+               | T_If T_LeftParen Expr T_RightParen CompoundStmtWithScope T_Else CompoundStmtWithScope
+                 { $$ = new IfStmt($3, $5, $7); }
+               ;
 
-iteration_statement   : while_statement { $$ = $1; }
-                      | for_statement   { $$ = $1; }
-                      ;
+IterationStmt  : WhileStmt      { $$ = $1; }
+               | for_statement  { $$ = $1; }
+               ;
 
-while_statement       : T_While T_LeftParen condition T_RightParen statement 
-                        { $$ = new WhileStmt($3, $5); }
-                      ;
+WhileStmt      : T_While T_LeftParen condition T_RightParen statement 
+                 { $$ = new WhileStmt($3, $5); }
+               ;
 
-for_statement         : T_For T_LeftParen expression_statement expression_statement expression T_RightParen statement
-                        { $$ = new ForStmt($3, $4, $5, $7); }
-                      ;
+for_statement  : T_For T_LeftParen ExprStmt ExprStmt Expr T_RightParen statement
+                 { $$ = new ForStmt($3, $4, $5, $7); }
+               ;
 
-condition             : expression            
-                      ;
+condition      : Expr            
+               ;
 
-return_statement      : T_Return expression_statement
-                        { $$ = new ReturnStmt(@2, $2); }
-                      ;
+ReturnStmt     : T_Return ExprStmt
+                 { $$ = new ReturnStmt(@2, $2); }
+               ;
 
-decl_statement        : single_declaration
-                        { $$ = new DeclStmt(@1, $1); }
-                      ;
+decl_statement : SingleDecl
+                 { $$ = new DeclStmt(@1, $1); }
+               ;
 
-break_statement       : T_Break T_Semicolon   
-                        { $$ = new BreakStmt(@1); }
-                      ;
+BreakStmt      : T_Break T_Semicolon   
+                 { $$ = new BreakStmt(@1); }
+               ;
 
-expression            : assignment_expression
-                      | arithmetic_expression
-                      | relational_expression
-                      | equality_expression
-                      | logical_expression
-                      | unary_expression
-                      ;
+Expr           : AssignmentExpr  { $$ = $1; }
+               | ArithmeticExpr  { $$ = $1; }
+               | RelationalExpr  { $$ = $1; }
+               | EqualityExpr    { $$ = $1; }
+               | LogicalExpr     { $$ = $1; }
+               | UnaryExpr       { $$ = $1; }
+               ;
 
-assignment_expression : unary_expression assignment_operator expression
-                      ;
+AssignmentExpr : UnaryExpr AssignmentOper Expr
+                 { $$ = new AssignExpr($1, $2, $3); }
+               ;
 
-assignment_operator   : T_Equal       
-                        { const char eq = '='; 
-                          $$ = new Operator(@1, &eq); }
-                      | T_MulAssign
-                        { const char *mulAssign = "*="; 
-                          $$ = new Operator(@1, mulAssign); }
-                      | T_DivAssign
-                        { const char *divAssign = "/=";
-                          $$ = new Operator(@1, divAssign); }
-                      | T_AddAssign
-                        { const char *addAssign = "+="; 
-                          $$ = new Operator(@1, addAssign); }
-                      | T_SubAssign
-                        { const char *subAssign = "-=";
-                          $$ = new Operator(@1, subAssign); }
-                      ;
+AssignmentOper : T_Equal       
+                 { $$ = new Operator(@1, "="); }
+               | T_MulAssign
+                 { $$ = new Operator(@1, "*="); }
+               | T_DivAssign
+                 { $$ = new Operator(@1, "/="); }
+               | T_AddAssign
+                 { $$ = new Operator(@1, "+="); }
+               | T_SubAssign
+                 { $$ = new Operator(@1, "-="); }
+               ;
 
-arithmetic_expression : expression T_Plus expression
-                      | expression T_Dash expression
-                      | expression T_Star expression
-                      | expression T_Slash expression
-                      ;
+ArithmeticExpr : Expr T_Plus Expr    
+                 { $$ = new ArithmeticExpr($1, new Operator(@2, "+"), $3); }
+               | Expr T_Dash Expr
+                 { $$ = new ArithmeticExpr($1, new Operator(@2, "-"), $3); }
+               | Expr T_Star Expr
+                 { $$ = new ArithmeticExpr($1, new Operator(@2, "*"), $3); }
+               | Expr T_Slash Expr
+                 { $$ = new ArithmeticExpr($1, new Operator(@2, "/"), $3); }
+               ;
 
-relational_expression : expression T_LeftAngle expression
-                      | expression T_RightAngle expression
-                      | expression T_LessEqual expression
-                      | expression T_GreaterEqual expression
-                      ;
+RelationalExpr : Expr T_LeftAngle Expr
+                 { $$ = new RelationalExpr($1, new Operator(@2, "<"), $3); }
+               | Expr T_RightAngle Expr
+                 { $$ = new RelationalExpr($1, new Operator(@2, ">"), $3); }
+               | Expr T_LessEqual Expr
+                 { $$ = new RelationalExpr($1, new Operator(@2, "<="), $3); }
+               | Expr T_GreaterEqual Expr
+                 { $$ = new RelationalExpr($1, new Operator(@2, ">="), $3); }
+               ;
 
-equality_expression   : expression T_EQ expression
-                      | expression T_NE expression
-                      ;
+EqualityExpr   : Expr T_EQ Expr
+                 { $$ = new EqualityExpr($1, new Operator(@2, "=="), $3); }
+               | Expr T_NE Expr
+                 { $$ = new EqualityExpr($1, new Operator(@2, "!="), $3); }
+               ;
 
-logical_expression    : expression T_And expression
-                      | expression T_Or expression
-                      ;
+LogicalExpr    : Expr T_And Expr
+                 { $$ = new LogicalExpr($1, new Operator(@2, "&&"), $3); }
+               | Expr T_Or Expr
+                 { $$ = new LogicalExpr($1, new Operator(@2, "||"), $3); }
+               ;
 
-postfix_expression    : primary_expression
-                      | postfix_expression T_Inc
-                      | postfix_expression T_Dec
-                      | func_call_expression
-                      ;
+PostfixExpr    : PrimaryExpr
+                 { $$ = $1; }
+               | PostfixExpr T_Inc
+                 { $$ = new PostfixExpr($1, new Operator(@2, "++")); }
+               | PostfixExpr T_Dec
+                 { $$ = new PostfixExpr($1, new Operator(@2, "--")); }
+               | func_call_expression
+               ;
 
 func_call_expression  : func_call_header_with_parameters T_RightParen
                       | func_call_header_with_no_parameters T_RightParen
                       ;
 
-func_call_header_with_no_parameters : function_identifier T_LeftParen T_Void
-                                    | function_identifier T_LeftParen
+func_call_header_with_no_parameters : FuncIdentifier T_LeftParen T_Void
+                                    | FuncIdentifier T_LeftParen
                                     ;
 
-func_call_header_with_parameters    : function_identifier T_LeftParen arg_list
+func_call_header_with_parameters    : FuncIdentifier T_LeftParen arg_list
                                     ;
 
-arg_list              : assignment_expression
-                      | arg_list T_Comma assignment_expression
-                      | primary_expression
-                      | arg_list T_Comma primary_expression
-                      ;
+arg_list       : AssignmentExpr
+               | arg_list T_Comma AssignmentExpr
+               | PrimaryExpr
+               | arg_list T_Comma PrimaryExpr
+               ;
 
-function_identifier   : T_Identifier
-                      ;
+FuncIdentifier : T_Identifier
+               ;
 
-primary_expression    : T_Identifier
-                      | constant
-                      | T_LeftParen expression T_RightParen
-                      ;
+PrimaryExpr    : T_Identifier
+                 { $$ = new VarExpr(@1, new Identifier(@1, $1)); }
+               | constant
+                 { $$ = $1; }
+               | T_LeftParen Expr T_RightParen
+                 { $$ = $2; }
+               ;
 
-unary_expression      : postfix_expression
-                      | T_Inc unary_expression
-                      | T_Dec unary_expression
-                      | T_Plus unary_expression
-                      | T_Dash unary_expression
-                      ;
+UnaryExpr      : PostfixExpr
+                 { $$ = $1; }
+               | T_Inc UnaryExpr
+                 { $$ = new ArithmeticExpr(new Operator(@1, "++"), $2); }
+               | T_Dec UnaryExpr
+                 { $$ = new ArithmeticExpr(new Operator(@1, "--"), $2); }
+               | T_Plus UnaryExpr
+                 { $$ = new ArithmeticExpr(new Operator(@1, "+"), $2); }
+               | T_Dash UnaryExpr
+                 { $$ = new ArithmeticExpr(new Operator(@1, "-"), $2); }
+               ;
 
-constant              : T_IntConstant      
-                      | T_BoolConstant    
-                      ;
+constant       : T_IntConstant      
+                 { $$ = new IntConstant(@1, $1); }
+               | T_BoolConstant    
+                 { $$ = new BoolConstant(@1, $1); }
+               ;
 %%
 
 /* The closing %% above marks the end of the Rules section and the beginning
