@@ -44,6 +44,7 @@ void yyerror(const char *msg); // standard error-handling routine
     char identifier[MaxIdentLen+1]; // +1 for terminating null
 
     Type *varType;
+    Identifier *id;
     VarDecl *varDecl;
     List<VarDecl*> *varDeclList;
     FnDecl *fnDecl;
@@ -52,6 +53,7 @@ void yyerror(const char *msg); // standard error-handling routine
 
     Operator *oper;
     Expr *expr;
+    List<Expr*> *argList;
 
     List<Stmt*> *stmtList;
     Stmt *stmt;
@@ -71,6 +73,8 @@ void yyerror(const char *msg); // standard error-handling routine
     RelationalExpr *relExpr;
     LogicalExpr *logicalExpr;
     EqualityExpr *equalityExpr;
+
+    Call *call;
 }
 
 /* Tokens
@@ -118,44 +122,44 @@ void yyerror(const char *msg); // standard error-handling routine
  * of the union named "declList" which is of type List<Decl*>.
  * pp2: You'll need to add many of these of your own.
  */
-%type <declList>         DeclList
-%type <decl>             Decl
-%type <varDecl>          SingleDecl 
-%type <varType>          TypeSpecifier
-%type <fnDecl>           FuncDefinition 
-%type <oper>             AssignmentOper 
-%type <expr>             Expr 
-%type <fnDecl>           FuncPrototype 
-%type <stmtBlock>        CompoundStmtWithScope 
-%type <fnDecl>           FuncPrototypeHeader
-%type <varDeclList>      ParameterDeclList
-%type <varDecl>          ParameterDecl
-%type <stmtList>         statement_list
-%type <stmt>             statement
-%type <integerConstant>  simple_statement
-%type <expr>             ExprStmt
-%type <ifStmt>           SelectionStmt
-%type <loopStmt>         IterationStmt
-%type <returnStmt>       ReturnStmt
-%type <declStmt>         decl_statement
-%type <breakStmt>        BreakStmt
-%type <whileStmt>        WhileStmt
-%type <forStmt>          for_statement
-%type <expr>             condition
-%type <assignExpr>       AssignmentExpr
-%type <arithExpr>        ArithmeticExpr
-%type <relExpr>          RelationalExpr
-%type <equalityExpr>     EqualityExpr
-%type <logicalExpr>      LogicalExpr
-%type <expr>             UnaryExpr
-%type <expr>             PostfixExpr
-%type <expr>             PrimaryExpr
-%type <integerConstant>  func_call_expression
-%type <integerConstant>  func_call_header_with_parameters
-%type <integerConstant>  func_call_header_with_no_parameters
-%type <integerConstant>  FuncIdentifier
-%type <integerConstant>  arg_list
-%type <expr>             constant
+%type <declList>     DeclList
+%type <decl>         Decl
+%type <varDecl>      SingleDecl 
+%type <varType>      TypeSpecifier
+%type <fnDecl>       FuncDefinition 
+%type <oper>         AssignmentOper 
+%type <expr>         Expr 
+%type <fnDecl>       FuncPrototype 
+%type <stmtBlock>    CompoundStmtWithScope 
+%type <fnDecl>       FuncPrototypeHeader
+%type <varDeclList>  ParameterDeclList
+%type <varDecl>      ParameterDecl
+%type <stmtList>     statement_list
+%type <stmt>         statement
+%type <stmt>         simple_statement
+%type <expr>         ExprStmt
+%type <ifStmt>       SelectionStmt
+%type <loopStmt>     IterationStmt
+%type <returnStmt>   ReturnStmt
+%type <declStmt>     decl_statement
+%type <breakStmt>    BreakStmt
+%type <whileStmt>    WhileStmt
+%type <forStmt>      for_statement
+%type <expr>         condition
+%type <assignExpr>   AssignmentExpr
+%type <arithExpr>    ArithmeticExpr
+%type <relExpr>      RelationalExpr
+%type <equalityExpr> EqualityExpr
+%type <logicalExpr>  LogicalExpr
+%type <expr>         UnaryExpr
+%type <expr>         PostfixExpr
+%type <expr>         PrimaryExpr
+%type <call>         func_call_expression
+%type <call>         func_call_header_with_parameters
+%type <call>         func_call_header_with_no_parameters
+%type <id>           FuncIdentifier
+%type <argList>      ArgList
+%type <expr>         constant
 
 
 %%
@@ -224,6 +228,7 @@ ParameterDecl         : TypeSpecifier T_Identifier
 CompoundStmtWithScope : T_LeftBrace statement_list T_RightBrace
                         { $$ = new StmtBlock($2); }
                       | T_LeftBrace T_RightBrace
+                        { $$ = new StmtBlock(new List<Stmt*>); }
                       ;
 
 statement_list        : statement_list statement    
@@ -238,19 +243,22 @@ statement             : CompoundStmtWithScope
                         { $$ = $1; }
                       ;
 
-simple_statement      : ExprStmt
-                      | SelectionStmt
-                      | IterationStmt
-                      | ReturnStmt
-                      | decl_statement
-                      | BreakStmt
+simple_statement      : ExprStmt       { $$ = $1; }
+                      | SelectionStmt  { $$ = $1; } 
+                      | IterationStmt  { $$ = $1; }
+                      | ReturnStmt     { $$ = $1; }
+                      | decl_statement { $$ = $1; }
+                      | BreakStmt      { $$ = $1; }
                       ;
 
 ExprStmt       : T_Semicolon
+                 { $$ = new EmptyExpr(); }
                | Expr T_Semicolon
+                 { $$ = $1; }
                ;
 
 SelectionStmt  : T_If T_LeftParen Expr T_RightParen CompoundStmtWithScope
+                 { $$ = new IfStmt($3, $5, NULL); }
                | T_If T_LeftParen Expr T_RightParen CompoundStmtWithScope T_Else CompoundStmtWithScope
                  { $$ = new IfStmt($3, $5, $7); }
                ;
@@ -267,7 +275,7 @@ for_statement  : T_For T_LeftParen ExprStmt ExprStmt Expr T_RightParen statement
                  { $$ = new ForStmt($3, $4, $5, $7); }
                ;
 
-condition      : Expr            
+condition      : Expr { $$ = $1; }
                ;
 
 ReturnStmt     : T_Return ExprStmt
@@ -345,26 +353,37 @@ PostfixExpr    : PrimaryExpr
                | PostfixExpr T_Dec
                  { $$ = new PostfixExpr($1, new Operator(@2, "--")); }
                | func_call_expression
+                 { $$ = $1; }
                ;
 
 func_call_expression  : func_call_header_with_parameters T_RightParen
+                        { $$ = $1; }
                       | func_call_header_with_no_parameters T_RightParen
+                        { $$ = $1; }
                       ;
 
 func_call_header_with_no_parameters : FuncIdentifier T_LeftParen T_Void
+                                      { $$ = new Call(@1, NULL, $1, NULL); }
                                     | FuncIdentifier T_LeftParen
+                                      { $$ = new Call(@1, NULL, $1, NULL); }
                                     ;
 
-func_call_header_with_parameters    : FuncIdentifier T_LeftParen arg_list
+func_call_header_with_parameters    : FuncIdentifier T_LeftParen ArgList
+                                      { $$ = new Call(@1, NULL, $1, $3); }
                                     ;
 
-arg_list       : AssignmentExpr
-               | arg_list T_Comma AssignmentExpr
+ArgList        : AssignmentExpr
+                 { ($$ = new List<Expr*>)->Append($1); }
+               | ArgList T_Comma AssignmentExpr
+                 { ($$ = $1)->Append($3); }
                | PrimaryExpr
-               | arg_list T_Comma PrimaryExpr
+                 { ($$ = new List<Expr*>)->Append($1); }
+               | ArgList T_Comma PrimaryExpr
+                 { ($$ = $1)->Append($3); }
                ;
 
 FuncIdentifier : T_Identifier
+                 { $$ = new Identifier(@1, $1); }
                ;
 
 PrimaryExpr    : T_Identifier
