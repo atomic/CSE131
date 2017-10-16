@@ -14,7 +14,6 @@ function usage() {
     echo -e "$0 [OPTIONS]...\n"
     echo -e "OPTIONS"
     echo -e "  --all Compares all solution files"
-    echo -e "  -s, --single Compare the given file name (without the extension)"
     exit 1
 }
 
@@ -26,7 +25,7 @@ function compare_all() {
         filename=$(echo $file | cut -f1 -d '.' | cut -f2 -d '/')
         ./parser < $file > ${OUTFILES}/$filename.out 2>&1
 
-        if diff -s ${OUTFILES}/$filename.out samples/$filename.out > /dev/null; then
+        if cmp -s ${OUTFILES}/$filename.out samples/$filename.out; then
             echo "${TXT_GREEN}[PASSED]${TXT_RESET} $file"
         else
             echo "${TXT_RED}[FAILED]${TXT_RESET} $file"
@@ -39,7 +38,6 @@ function compare_all() {
 
 while true; do
     case "$1" in
-        -s | --single ) compare $2; break ;;
         --all ) compare_all; break ;;
         *     ) usage ;;
     esac
