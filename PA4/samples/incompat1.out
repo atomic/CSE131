@@ -1,0 +1,6 @@
+
+*** Error line 6.
+	y = x;	
+      ^
+*** Incompatible operands: boolean = int
+

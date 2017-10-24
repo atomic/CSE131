@@ -1,0 +1,6 @@
+
+*** Error line 3.
+void foo () {
+     ^^^
+*** Declaration of 'foo' here conflicts with declaration on line 1
+

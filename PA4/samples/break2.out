@@ -1,0 +1,6 @@
+
+*** Error line 6.
+		break;
+        ^^^^^
+*** break is only allowed inside a loop
+

@@ -1,0 +1,6 @@
+
+*** Error line 4.
+  return 2 + true;
+           ^
+*** Incompatible operands: int + boolean
+

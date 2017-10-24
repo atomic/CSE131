@@ -1,0 +1,6 @@
+
+*** Error line 19.
+int fubar() {
+    ^^^^^
+*** Declaration of 'fubar' on line 19 doesn't have a return
+

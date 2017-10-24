@@ -1,0 +1,6 @@
+
+*** Error line 4.
+	for (x = 0; y ; x++ ) {
+                ^
+*** Test expression must have boolean type
+

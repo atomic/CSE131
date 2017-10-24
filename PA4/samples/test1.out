@@ -1,0 +1,6 @@
+
+*** Error line 2.
+boolean a;
+        ^
+*** Declaration of 'a' here conflicts with declaration on line 1
+

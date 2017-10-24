@@ -1,0 +1,6 @@
+
+*** Error line 11.
+     boolean b = x;
+             ^
+*** Wrong initialization of identifier 'b': idType 'boolean' exprType 'int'
+
