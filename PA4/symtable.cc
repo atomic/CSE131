@@ -2,8 +2,8 @@
  * Symbol table implementation
  *
  */
+#include "symtable.h"
 
- #include "symtable.h"
 
 SymbolTable::SymbolTable() {
     //Add the initial scope
@@ -12,19 +12,23 @@ SymbolTable::SymbolTable() {
     current_scope = &(symtab_vec.back());
  }
 
-void SymbolTable::PushScope() {
-    symtab_vec.push_back(this->CreateScope(Other));
-    current_scope = &(symtab_vec.back());
-}
+void SymbolTable::PushScope(ScopeCreator creator) {
+    Scope new_scope;
+    new_scope.has_return = false;
+    new_scope.creator = creator;
+    new_scope.creator_name = "";
 
-void SymbolTable::PushLoopScope() {
-    symtab_vec.push_back(this->CreateScope(Loop));
+    symtab_vec.push_back(new_scope);
     current_scope = &(symtab_vec.back());
 }
 
 void SymbolTable::PopScope() {
     symtab_vec.pop_back();
     current_scope = &(symtab_vec.back());
+}
+
+void SymbolTable::AttachSymbolToCurrentScope(string name) {
+    current_scope->creator_name = name;
 }
 
 void SymbolTable::AddSymbol(string name, Decl* decl_obj) {
@@ -37,10 +41,27 @@ void SymbolTable::AddSymbol(string name, Decl* decl_obj) {
     // else cout << "Fail to add symbol: " << name << endl;
 }
 
-bool SymbolTable::HasLoopScope() {
+void SymbolTable::ReturnStmtDoesExist() {
     for (int i = symtab_vec.size() - 1; i >= 0; i--) {
-        if (symtab_vec[i].is_breakable) return true;
+        if (symtab_vec[i].creator == Func) {
+            symtab_vec[i].has_return = true;
+            return;
+        }
     }
+}
+
+bool SymbolTable::CurrentScopeHasReturn() {
+    return current_scope->has_return;
+}
+
+bool SymbolTable::ContainsLoopScope() {
+
+    for (int i = symtab_vec.size() - 1; i >= 0; i--) {
+        if (symtab_vec[i].creator == Loop) {
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -82,18 +103,4 @@ Decl* SymbolTable::FindSymbolInAllScopes(string name) {
 
     // cout << "Cannot find symbol: " << name << " in SymbolTable::FindSymbolInAllScopes()!!!" << endl;
     return NULL;    
-}
-
-Scope SymbolTable::CreateScope(ScopeType type) {
-    Scope new_scope;
-    new_scope.has_return = false;
-
-    switch(type) {
-        case Loop:
-            new_scope.is_breakable = true; 
-            return new_scope;
-        default:
-            new_scope.is_breakable = false; 
-            return new_scope;
-    }
 }

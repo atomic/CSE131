@@ -70,7 +70,10 @@ void FnDecl::Check() {
     symtab->AddSymbol(id->GetName(),this);
 
     // Push a new scope for this function declarartion
-    symtab->PushScope();
+    symtab->PushScope(Func);
+
+    // Save the function name to the current scope
+    symtab->AttachSymbolToCurrentScope(id->GetName());
 
     // Check formals(Lisf of VarDecl)
     for(int i = 0; i < formals->NumElements(); i++){
@@ -80,8 +83,10 @@ void FnDecl::Check() {
     // Check body(List of Stmt)
     body->Check();
 
-    // TODO: Check for missing ReturnStmt
-
+    // Check for missing ReturnStmt
+    if (returnType != Type::voidType && !symtab->CurrentScopeHasReturn()) {
+        ReportError::ReturnMissing(this);
+    }
 
     // Finish semantic check for this function declaration,
     // thus pop its scope

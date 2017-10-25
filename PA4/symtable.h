@@ -11,33 +11,35 @@
 #include "ast_decl.h"
 #include "ast_stmt.h"
 
-enum ScopeType { Loop, Other };
+enum ScopeCreator { Loop, Func, IfElse };
 
 struct Scope {
     map<string, Decl*> scope_map;
     bool has_return;
-    bool is_breakable;
+
+    ScopeCreator creator;
+    string creator_name;
 };
 
 class SymbolTable {
+
     protected:
         vector<Scope> symtab_vec;
         Scope *current_scope;
 
     public:
         SymbolTable();     
-        void PushScope();
-        void PushLoopScope();
+        void PushScope(ScopeCreator creator);
         void PopScope();
+        void AttachSymbolToCurrentScope(string name);
         void AddSymbol(string name, Decl* decl_obj);
+        void ReturnStmtDoesExist();
 
-        bool HasLoopScope();
-        bool IsCurrentScopeBreakable();
+        bool CurrentScopeHasReturn();
+        bool ContainsLoopScope();
         bool IsInCurrentScope(string name);
         bool IsInAllScopes(string name);
         Decl* FindSymbolInCurrentScope(string name);
         Decl* FindSymbolInAllScopes(string name);
 
-    private:
-        Scope CreateScope(ScopeType type);
 };

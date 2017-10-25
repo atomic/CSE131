@@ -8,6 +8,7 @@
 #include "ast_expr.h"
 #include "errors.h"
 #include "symtable.h"
+#include "string.h"
 
 Program::Program(List<Decl*> *d) {
     Assert(d != NULL);
@@ -39,14 +40,14 @@ ForStmt::ForStmt(Expr *i, Expr *t, Expr *s, Stmt *b): LoopStmt(t, b) {
     (init=i)->SetParent(this);
     step = s;
     if ( s )
-      (step=s)->SetParent(this);
+        (step=s)->SetParent(this);
 }
 
 void ForStmt::PrintChildren(int indentLevel) {
     init->Print(indentLevel+1, "(init) ");
     test->Print(indentLevel+1, "(test) ");
     if ( step )
-      step->Print(indentLevel+1, "(step) ");
+        step->Print(indentLevel+1, "(step) ");
     body->Print(indentLevel+1, "(body) ");
 }
 
@@ -74,7 +75,7 @@ ReturnStmt::ReturnStmt(yyltype loc, Expr *e) : Stmt(loc) {
 
 void ReturnStmt::PrintChildren(int indentLevel) {
     if ( expr ) 
-      expr->Print(indentLevel+1);
+        expr->Print(indentLevel+1);
 }
 
 DeclStmt::DeclStmt(yyltype loc, Decl *decl) : Stmt(loc) {
@@ -96,25 +97,30 @@ void Program::Check() {
      */
 
     if ( decls->NumElements() > 0 ) {
-      for ( int i = 0; i < decls->NumElements(); ++i ) {
-        Decl *d = decls->Nth(i);
-         d->Check();
-      }
+        for ( int i = 0; i < decls->NumElements(); ++i ) {
+            Decl *d = decls->Nth(i);
+            d->Check();
+        }
     }
 }
 
 void StmtBlock::Check() {
+    for (int i = 0; i < stmts->NumElements(); ++i) {
+        Stmt *s = stmts->Nth(i);
+        s->Check();
+    }
 }
 
 void IfStmt::Check() {
     // Check that the test expression is a boolean type
     if (test->CheckExpr() != Type::boolType) {
         ReportError::TestNotBoolean(test);
-        return;
+
+        //TODO return;
     }
 
     // Push a new scope for this if statement
-    symtab->PushScope();
+    symtab->PushScope(IfElse);
 
     // Check the if statement body
     body->Check();
@@ -126,11 +132,11 @@ void IfStmt::Check() {
     if (elseBody) {
 
         // Push a new scope for this else statement
-        symtab->PushScope();
+        symtab->PushScope(IfElse);
 
         // Check the else statement body
         elseBody->Check();
-        
+
         // Pop scope because the else statement has ended
         symtab->PopScope();
     } 
@@ -144,7 +150,7 @@ void WhileStmt::Check() {
     }
 
     // Push a new scope for this while statement
-    symtab->PushLoopScope();
+    symtab->PushScope(Loop);
 
     // Check the while body
     body->Check();
@@ -154,14 +160,18 @@ void WhileStmt::Check() {
 }
 
 void ForStmt::Check() {
-    
+
 }
 
 void ReturnStmt::Check() {
+    // Set the has_return flag of the function's direct scope to true
+    symtab->ReturnStmtDoesExist();
+
+    expr->CheckExpr();
 }
 
 void BreakStmt::Check() {
-    if (!symtab->HasLoopScope()) {
+    if (!symtab->ContainsLoopScope()) {
         ReportError::BreakOutsideLoop(this);
     }
 }

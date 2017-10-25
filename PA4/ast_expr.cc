@@ -138,15 +138,40 @@ Type* ArithmeticExpr::CheckExpr() {
 }
 
 Type* RelationalExpr::CheckExpr() {
-    return Type::intType;
+    // Extract the types of the LHS and RHS
+    Type *tL = left->CheckExpr();
+    Type *tR = right->CheckExpr();
+
+    // Check that both types are of int types
+    if (tL != Type::intType && tR != Type::intType) {
+        ReportError::IncompatibleOperands(op, tL, tR);
+    }
+    
+    return Type::boolType;
 }
 
 Type* EqualityExpr::CheckExpr() {
-    return Type::intType;
+    // Extract the types of the LHS and RHS
+    Type *tL = left->CheckExpr();
+    Type *tR = right->CheckExpr();
+
+    // Check that the two types match
+    if (tL != tR) {
+        ReportError::IncompatibleOperands(op, tL, tR);
+    }
+
+    return Type::boolType;
 }
 
 Type* LogicalExpr::CheckExpr() {
-    return Type::intType;
+    // Extract the types of the LHS and RHS
+    Type *tL = left->CheckExpr();
+    Type *tR = right->CheckExpr();
+
+    if (tL != Type::boolType && tR != Type::boolType) {
+        ReportError::IncompatibleOperands(op, tL, tR);
+    }
+    return Type::boolType;
 }
 
 
