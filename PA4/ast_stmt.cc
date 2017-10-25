@@ -137,16 +137,36 @@ void IfStmt::Check() {
 }
 
 void WhileStmt::Check() {
+    // Check that the test expression is a boolean type
+    if (test->CheckExpr() != Type::boolType) {
+        ReportError::TestNotBoolean(test);
+        return;
+    }
+
+    // Push a new scope for this while statement
+    symtab->PushLoopScope();
+
+    // Check the while body
+    body->Check();
+
+    // Pop scope because the while statement has ended
+    symtab->PopScope();
 }
 
 void ForStmt::Check() {
+    
 }
 
 void ReturnStmt::Check() {
 }
 
 void BreakStmt::Check() {
+    if (!symtab->HasLoopScope()) {
+        ReportError::BreakOutsideLoop(this);
+    }
 }
 
 void DeclStmt::Check() {
+    // Check the variable declaration statement
+    varDecl->Check();
 }

@@ -11,9 +11,12 @@
 #include "ast_decl.h"
 #include "ast_stmt.h"
 
-struct Scope{
+enum ScopeType { Loop, Other };
+
+struct Scope {
     map<string, Decl*> scope_map;
     bool has_return;
+    bool is_breakable;
 };
 
 class SymbolTable {
@@ -24,11 +27,17 @@ class SymbolTable {
     public:
         SymbolTable();     
         void PushScope();
+        void PushLoopScope();
         void PopScope();
         void AddSymbol(string name, Decl* decl_obj);
 
+        bool HasLoopScope();
+        bool IsCurrentScopeBreakable();
         bool IsInCurrentScope(string name);
         bool IsInAllScopes(string name);
         Decl* FindSymbolInCurrentScope(string name);
         Decl* FindSymbolInAllScopes(string name);
+
+    private:
+        Scope CreateScope(ScopeType type);
 };

@@ -13,10 +13,12 @@ SymbolTable::SymbolTable() {
  }
 
 void SymbolTable::PushScope() {
-    Scope new_scope;
-    new_scope.has_return = false;
+    symtab_vec.push_back(this->CreateScope(Other));
+    current_scope = &(symtab_vec.back());
+}
 
-    symtab_vec.push_back(new_scope);
+void SymbolTable::PushLoopScope() {
+    symtab_vec.push_back(this->CreateScope(Loop));
     current_scope = &(symtab_vec.back());
 }
 
@@ -33,6 +35,13 @@ void SymbolTable::AddSymbol(string name, Decl* decl_obj) {
 
     // if(result.second) cout << "Successfully add symbol: " << name << endl;
     // else cout << "Fail to add symbol: " << name << endl;
+}
+
+bool SymbolTable::HasLoopScope() {
+    for (int i = symtab_vec.size() - 1; i >= 0; i--) {
+        if (symtab_vec[i].is_breakable) return true;
+    }
+    return false;
 }
 
 bool SymbolTable::IsInCurrentScope(string name) {
@@ -73,4 +82,18 @@ Decl* SymbolTable::FindSymbolInAllScopes(string name) {
 
     // cout << "Cannot find symbol: " << name << " in SymbolTable::FindSymbolInAllScopes()!!!" << endl;
     return NULL;    
+}
+
+Scope SymbolTable::CreateScope(ScopeType type) {
+    Scope new_scope;
+    new_scope.has_return = false;
+
+    switch(type) {
+        case Loop:
+            new_scope.is_breakable = true; 
+            return new_scope;
+        default:
+            new_scope.is_breakable = false; 
+            return new_scope;
+    }
 }

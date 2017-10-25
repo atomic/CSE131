@@ -52,6 +52,7 @@ dkms.conf
 lex.yy.c
 lexer
 parser
+glc
 y.output
 y.tab.c
 y.tab.h
