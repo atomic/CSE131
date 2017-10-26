@@ -5,7 +5,7 @@ TXT_RED=$(tput setaf 1 2> /dev/null)
 TXT_GREEN=$(tput setaf 2 2> /dev/null)
 OUTFILES=outfiles
 
-if [ ! -f "parser" ]; then
+if [ ! -f "glc" ]; then
     echo "'parser' executable does not exist. Use 'make'"
     exit 1
 fi
@@ -23,7 +23,7 @@ function compare_all() {
     for file in $(ls samples/*.java); do
 
         filename=$(echo $file | cut -f1 -d '.' | cut -f2 -d '/')
-        ./parser < $file > ${OUTFILES}/$filename.out 2>&1
+        ./glc < $file > ${OUTFILES}/$filename.out 2>&1
 
         if cmp -s ${OUTFILES}/$filename.out samples/$filename.out; then
             echo "${TXT_GREEN}[PASSED]${TXT_RESET} $file"
