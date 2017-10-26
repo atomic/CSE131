@@ -53,8 +53,11 @@ void VarDecl::Check() {
     // If this VarDecl has assinTo, which means it is doing an initialization,
     // then you need to check whether the type of the initialization is the same
     // as the type of this VarDecl
-    if(assignTo) {
-        // TODO: check type
+    if (assignTo) {
+        Type *rType = assignTo->CheckExpr();
+        if (type != rType) {
+            ReportError::InvalidInitialization(id, type, rType);
+        }
     }
 
     symtab->AddSymbol(id->GetName(),this);      
