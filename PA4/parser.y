@@ -365,9 +365,9 @@ func_call_expression  : func_call_header_with_parameters T_RightParen
                       ;
 
 func_call_header_with_no_parameters : FuncIdentifier T_LeftParen T_Void
-                                      { $$ = new Call(@1, NULL, $1, NULL); }
+                                      { $$ = new Call(@1, NULL, $1, new List<Expr*>); }
                                     | FuncIdentifier T_LeftParen
-                                      { $$ = new Call(@1, NULL, $1, NULL); }
+                                      { $$ = new Call(@1, NULL, $1, new List<Expr*>); }
                                     ;
 
 func_call_header_with_parameters    : FuncIdentifier T_LeftParen ArgList
