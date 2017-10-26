@@ -1,12 +1,12 @@
 
 *** Error line 4.
 	if (i) {
-        ^
+            ^
 *** Test expression must have boolean type
 
 
 *** Error line 5.
-		y = 0;
+	y = 0;
         ^
 *** No declaration found for variable 'y'
 
