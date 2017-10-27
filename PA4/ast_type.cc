@@ -19,7 +19,7 @@ Type *Type::intType    = new Type("int");
 Type *Type::voidType   = new Type("void");
 Type *Type::boolType   = new Type("boolean");
 Type *Type::errorType  = new Type("error"); 
-Type *Type::bvec4Type = new Type("bvec4");
+Type *Type::bvec4Type  = new Type("bvec4");
 
 Type::Type(const char *n) {
     Assert(n);
