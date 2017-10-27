@@ -1,6 +1,6 @@
 
 *** Error line 3.
 	y = x;
-        ^
+            ^
 *** No declaration found for variable 'x'
 

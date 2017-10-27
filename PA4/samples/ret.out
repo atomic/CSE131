@@ -1,6 +1,6 @@
 
 *** Error line 3.
 	return x;
-           ^
+               ^^
 *** Incompatible return: int given, void expected
 

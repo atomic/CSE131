@@ -1,6 +1,6 @@
 
 *** Error line 4.
 	++a;
-    ^^
+        ^^
 *** Incompatible operand: ++ boolean
 
