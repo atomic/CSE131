@@ -11,3 +11,9 @@ CSE 131 Homeworks
         - chained_expression
         - equality_expression
         - 
+
+# PA4 TODO
+- Finish ReturnStmt implementation. (check that the func type matches the return expression type)
+- Refactor StmtBlock to check for expressions. Currently it only checks Stmts.
+- ForStmt Check implementation
+- Postfix CheckExpr implementation 
