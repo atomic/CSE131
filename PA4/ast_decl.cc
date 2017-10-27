@@ -70,13 +70,11 @@ void FnDecl::Check() {
         return;
     }    
 
-    symtab->AddSymbol(id->GetName(),this);
+    symtab->AddFnDeclSymbol(id->GetName(), this);
+    //symtab->AddSymbol(id->GetName(),this);
 
     // Push a new scope for this function declarartion
     symtab->PushScope(Func);
-
-    // Save the function name to the current scope
-    symtab->AttachSymbolToCurrentScope(id->GetName());
 
     // Check formals(Lisf of VarDecl)
     for(int i = 0; i < formals->NumElements(); i++){
