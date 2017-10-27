@@ -23,9 +23,9 @@ function compare_all() {
     for file in $(ls samples/*.java); do
 
         filename=$(echo $file | cut -f1 -d '.' | cut -f2 -d '/')
-        ./glc < $file > ${OUTFILES}/$filename.out 2>&1
+        ./glc < $file 2> ${OUTFILES}/$filename.out
 
-        if cmp -s ${OUTFILES}/$filename.out samples/$filename.out; then
+        if diff -s ${OUTFILES}/$filename.out samples/$filename.out > /dev/null; then
             echo "${TXT_GREEN}[PASSED]${TXT_RESET} $file"
         else
             echo "${TXT_RED}[FAILED]${TXT_RESET} $file"
