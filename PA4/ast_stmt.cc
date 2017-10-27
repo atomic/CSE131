@@ -115,8 +115,6 @@ void IfStmt::Check() {
     // Check that the test expression is a boolean type
     if (test->CheckExpr() != Type::boolType) {
         ReportError::TestNotBoolean(test);
-
-        //TODO return;
     }
 
     // Push a new scope for this if statement
@@ -146,7 +144,6 @@ void WhileStmt::Check() {
     // Check that the test expression is a boolean type
     if (test->CheckExpr() != Type::boolType) {
         ReportError::TestNotBoolean(test);
-        return;
     }
 
     // Push a new scope for this while statement
@@ -161,13 +158,37 @@ void WhileStmt::Check() {
 
 void ForStmt::Check() {
 
+    symtab->PushScope(Loop);
+
+    init->CheckExpr();
+
+    if (test->CheckExpr() != Type::boolType) {
+        ReportError::TestNotBoolean(test);
+    }
+
+    step->CheckExpr();
+
+    // Check the for loop body
+    body->Check();
+
+    // Pop scope because the for loop statement has ended
+    symtab->PopScope();
 }
 
 void ReturnStmt::Check() {
     // Set the has_return flag of the function's direct scope to true
     symtab->ReturnStmtDoesExist();
+    FnDecl* func = symtab->GetLatestFnDecl();
 
-    expr->CheckExpr();
+    Type *givenReturn = expr->CheckExpr();
+
+    if (func->GetType() == Type::voidType && givenReturn != Type::bvec4Type) {
+        ReportError::ReturnMismatch(this, givenReturn, func->GetType());
+    }
+
+    if (func->GetType() != Type::voidType && givenReturn != func->GetType()) {
+        ReportError::ReturnMismatch(this, givenReturn, func->GetType());
+    }
 }
 
 void BreakStmt::Check() {
