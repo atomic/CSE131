@@ -37,7 +37,8 @@ class Expr : public Stmt
       return Type::bvec4Type;
     }
 
-    
+    virtual void Check() { CheckExpr(); }
+
 };
 
 class ExprError : public Expr
