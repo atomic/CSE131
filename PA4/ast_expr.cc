@@ -126,14 +126,74 @@ Type* BoolConstant::CheckExpr() {
 }
 
 Type* VarExpr::CheckExpr() {
-    return Type::intType;
+    Decl* d = symtab->FindSymbolInAllScopes(id->GetName());
+    
+    if ( d == NULL ) {
+        ReportError::IdentifierNotDeclared(id, LookingForVariable);
+        return Type::errorType;
+    }
+
+    VarDecl* v = dynamic_cast<VarDecl*>(d);
+    return v->GetType();
 }
 
 Type* Call::CheckExpr() {
-    return Type::intType;
+    Decl* d = symtab->FindSymbolInAllScopes(field->GetName());
+    FnDecl *f = dynamic_cast<FnDecl*>(d);
+
+    if (f) {
+
+        List<VarDecl*> *formals = f->GetFormals();
+        int expCount = formals->NumElements();
+        int actualCount = actuals->NumElements();
+
+        if (expCount < actualCount) {
+            ReportError::ExtraFormals(field, expCount, actualCount);
+        }
+
+        if (expCount > actualCount) {
+            ReportError::LessFormals(field, expCount, actualCount);
+        }
+
+        for (int i = 0; i < actualCount - 1; ++i) {
+            Type *givenType = actuals->Nth(i)->CheckExpr();
+            Type *expType = formals->Nth(i)->GetType();
+
+            if (givenType != expType) {
+                ReportError::FormalsTypeMismatch(field, i, expType, givenType);
+            }
+        }
+
+        return f->GetType();
+
+    } else {
+        ReportError::NotAFunction(field);
+        return Type::errorType;
+    }
 }
 
 Type* ArithmeticExpr::CheckExpr() {
+    // Extract the type of the RHS
+    Type *tR = right->CheckExpr();
+
+    if (left) {
+
+        // Extract the type of the LHS
+        Type *tL = left->CheckExpr();
+
+        // Check that both LHS and RHS are of int type
+        if (tL != Type::intType || tR != Type::intType) {
+            ReportError::IncompatibleOperands(op, tL, tR);
+        }
+
+    } else {
+        // Check that the RHS is an int type
+        if (tR != Type::intType) {
+            ReportError::IncompatibleOperand(op, tR);
+        }
+
+    }
+
     return Type::intType;
 }
 
@@ -143,7 +203,7 @@ Type* RelationalExpr::CheckExpr() {
     Type *tR = right->CheckExpr();
 
     // Check that both types are of int types
-    if (tL != Type::intType && tR != Type::intType) {
+    if (tL != Type::intType || tR != Type::intType) {
         ReportError::IncompatibleOperands(op, tL, tR);
     }
     
@@ -174,11 +234,32 @@ Type* LogicalExpr::CheckExpr() {
     return Type::boolType;
 }
 
-
 Type* AssignExpr::CheckExpr() {
-    return Type::intType;
+    // Extract the types of the LHS and RHS
+    Type *tL = left->CheckExpr();
+    Type *tR = right->CheckExpr();
+
+    if (tR->IsError())
+        return Type::errorType;
+
+    if (tL->IsError())
+        return Type::errorType;
+
+    if (tL != tR) {
+        ReportError::IncompatibleOperands(op, tL, tR);
+        return Type::errorType;
+    }
+
+    return tL;
 }
 
 Type* PostfixExpr::CheckExpr() {
+    // Extract the types of the LHS and RHS
+    Type *tL = left->CheckExpr();
+
+    if (tL != Type::intType) {
+
+    }
+
     return Type::intType;
 }
