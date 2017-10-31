@@ -1,0 +1,28 @@
+pow:
+    LoadParam base
+    LoadParam exponent
+    BeginFunc 24
+    result := 1
+    i := 0
+L0:
+    t1 := i < exponent
+    if t1 goto L1
+    goto L2
+L1:
+    t2 := result * base
+    result := t2
+    i := i + 1
+    goto L0
+L2:
+    Return result
+    EndFunc 
+main:
+    BeginFunc 16
+    PushParam 2
+    PushParam 3
+    t3 call pow 2
+    PopParam 8
+    t4 := t3 * 5
+    t5 := 1 + t4
+    a := t5
+    EndFunc 

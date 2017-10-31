@@ -1,0 +1,17 @@
+main:
+    BeginFunc 20
+    b := 30
+    a := 2
+L0:
+    t1 := a < 10
+    if t1 goto L1
+    goto L2
+L1:
+    t2 := a + 2
+    b := t2
+    t3 := a * b
+    b := t3
+    a := a + 1
+    goto L0
+L2:
+    EndFunc 

@@ -1,0 +1,28 @@
+main:
+    BeginFunc 12
+    if true goto L0
+    goto L1
+L0:
+    a := 2
+    t1 := a > 3
+    if t1 goto L2
+    goto L3
+L2:
+    a := a - 1
+    goto L3
+L3:
+    goto L4
+L1:
+    b := true
+    if b goto L5
+    goto L6
+L5:
+    b := false
+    goto L7
+L6:
+    b := true
+    goto L7
+L7:
+    goto L4
+L4:
+    EndFunc 

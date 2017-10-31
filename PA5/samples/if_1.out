@@ -1,0 +1,12 @@
+main:
+    BeginFunc 12
+    a := 1
+    t1 := a < 2
+    if t1 goto L0
+    goto L1
+L0:
+    t2 := a + 1
+    a := t2
+    goto L1
+L1:
+    EndFunc 

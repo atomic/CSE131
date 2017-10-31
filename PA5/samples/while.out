@@ -1,0 +1,14 @@
+main:
+    BeginFunc 12
+    a := 100
+L0:
+    t1 := a > 0
+    if t1 goto L1
+    goto L2
+L1:
+    t2 := a / 3
+    a := t2
+    goto L0
+L2:
+    a := 10000
+    EndFunc 

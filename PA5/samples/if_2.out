@@ -1,0 +1,12 @@
+main:
+    BeginFunc 12
+    a := false
+    t1 := a == true
+    if t1 goto L0
+    goto L1
+L0:
+    a := true
+    goto L1
+L1:
+    b := 2
+    EndFunc 
