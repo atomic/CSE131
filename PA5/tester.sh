@@ -36,9 +36,17 @@ function compare_all() {
     rm -rf ${OUTFILES}
 }
 
+function compare_diff() {
+    mkdir -p ${OUTFILES}
+    ./parser < samples/$1.java > ${OUTFILES}/$1.out
+    vimdiff ${OUTFILES}/$1.out samples/$1.out;
+    rm -rf ${OUTFILES}
+}
+
 while true; do
     case "$1" in
         --all ) compare_all; break ;;
+        -d    ) compare_diff $2; break ;;
         *     ) usage ;;
     esac
 done
