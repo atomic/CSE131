@@ -60,3 +60,4 @@ y.tab.h
 # Our output files
 mysamples/
 temp.out
+*.un~
