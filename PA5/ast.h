@@ -43,7 +43,8 @@ using namespace std;
 class SymbolTable;
 
 struct TACObject{
-    // Design your own TAC data structure for each line of TAC
+    string tac;    // three address code
+    int bytes;     // # of bytes for this TAC
 };
 
 class Node  {
@@ -56,7 +57,7 @@ class Node  {
     // And initialize them in ast.cc
     static int registerCounter;
     static int labelCounter;
-    static vector<string> TACContainer;
+    static vector<TACObject> TACContainer;
 
   public:
     Node(yyltype loc);

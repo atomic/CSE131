@@ -29,8 +29,11 @@ string VarDecl::Emit() {
     string varName = GetIdentifier()->GetName();
 
     if (assignTo) {
-        string rhsRegisterName = assignTo->Emit();
-        TACContainer.push_back(string("    ") + varName + string(" := ") + rhsRegisterName);    
+        string rhsRegName = assignTo->Emit();
+        TACObject tacObj;
+        tacObj.tac = string("    ") + varName + string(" := ") + rhsRegName;
+        tacObj.bytes = 4;
+        TACContainer.push_back(tacObj);
     }     
 
     return "VarDecl::Emit()";

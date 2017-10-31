@@ -90,7 +90,7 @@ string Program::Emit() {
     }
 
     for (int i = 0; i < TACContainer.size(); i++) {
-        cout << TACContainer[i] << endl;
+        cout << TACContainer[i].tac << endl;
     }
 
     return "Program::Emit()";
