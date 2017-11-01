@@ -29,6 +29,9 @@ function compare_all() {
             echo "${TXT_GREEN}[PASSED]${TXT_RESET} $file"
         else
             echo "${TXT_RED}[FAILED]${TXT_RESET} $file"
+            if [ -n "$1" ]; then
+                compare_diff ${filename}
+            fi
         fi
 
     done
@@ -37,16 +40,25 @@ function compare_all() {
 }
 
 function compare_diff() {
-    mkdir -p ${OUTFILES}
-    ./parser < samples/$1.java > ${OUTFILES}/$1.out
-    vimdiff ${OUTFILES}/$1.out samples/$1.out;
-    rm -rf ${OUTFILES}
+    if [[ $(which colordiff) =~ "not found" ]]; then
+        diff -yW"`tput cols`" <(./parser < samples/$1.java) <(cat samples/$1.out)
+        echo "Note: install colordiff for nicer output"
+    else
+        colordiff -yW"`tput cols`" <(./parser < samples/$1.java) <(cat samples/$1.out)
+    fi
+}
+
+function rebuild() {
+    make clean
+    make > /dev/null
 }
 
 while true; do
     case "$1" in
-        --all ) compare_all; break ;;
+        --all  ) compare_all; break ;;
+        --alld ) compare_all $1; break ;;
         -d    ) compare_diff $2; break ;;
+        -r    ) rebuild; break ;;
         *     ) usage ;;
     esac
 done
