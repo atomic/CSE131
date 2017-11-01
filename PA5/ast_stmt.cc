@@ -98,7 +98,8 @@ string Program::Emit() {
                      << TACContainer[i].rhs << endl;
             break;
             case instr:
-                cout << "    " + TACContainer[i].lhs + " " + TACContainer[i].rhs << endl;
+                cout << "    " + TACContainer[i].lhs 
+                     << " " + TACContainer[i].rhs << endl;
             break;
             default:
                 cout << " ERRRORRR !!!! " << endl;
@@ -131,10 +132,15 @@ string IfStmt::Emit() {
 }
 
 string ReturnStmt::Emit() {
+    string rhs = expr->Emit();
+    TACObject o("Return", rhs, 0, instr);
+    TACContainer.push_back(o);
+
     return "ReturnStmt Emit()";
 }
 
 string DeclStmt::Emit() {
+    varDecl->Emit();
     return "DeclStmt Emit()";
 }
 

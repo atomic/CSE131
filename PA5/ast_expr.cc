@@ -132,7 +132,7 @@ string ArithmeticExpr::Emit() {
     string regStr = "t" + to_string(registerCounter);
     registerCounter++;
     string assignTo = leftStr + string(" ") + opString + string(" ") + rightStr;
-    TACObject tacObj(regStr, assignTo, 4, stmt );
+    TACObject tacObj(regStr, assignTo, 4, stmt);
 
     TACContainer.push_back(tacObj);
 

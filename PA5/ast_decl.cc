@@ -60,13 +60,13 @@ string FnDecl::Emit() {
         TACContainer.push_back(o);
     }
 
-    TACObject o("BeginFunc", "?", 0, instr);
-    TACContainer.push_back(o);
+    TACObject t1("BeginFunc", "?", 0, instr);
+    TACContainer.push_back(t1);
 
     body->Emit();
 
-    TACObject o1("EndFunc", "", 0, instr);
-    TACContainer.push_back(o1);
+    TACObject t2("EndFunc", "", 0, instr);
+    TACContainer.push_back(t2);
 
     return "FnDecl::Emit()";
 }
