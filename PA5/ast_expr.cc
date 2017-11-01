@@ -120,6 +120,7 @@ string Call::Emit() {
     }
 
     string registerStr = "t" + to_string(registerCounter);
+    registerCounter++;
     string rhs = string(field->GetName()) + " " + to_string(actuals->NumElements());
 
     TACObject tacObj2(registerStr, rhs, 0, call);
@@ -146,17 +147,28 @@ string ArithmeticExpr::Emit() {
     string rightStr = right->Emit();
     string opString = op->Emit();
 
-    string regStr = "t" + to_string(registerCounter);
+    string registerStr = "t" + to_string(registerCounter);
     registerCounter++;
     string assignTo = leftStr + string(" ") + opString + string(" ") + rightStr;
-    TACObject tacObj(regStr, assignTo, 4, stmt);
+    TACObject tacObj(registerStr, assignTo, 4, stmt);
 
     TACContainer.push_back(tacObj);
 
-    return regStr;
+    return registerStr;
 }
 
 string RelationalExpr::Emit() {
+    string leftStr = left->Emit();
+    string rightStr = right->Emit();
+    string opString = op->Emit();
+
+    string registerStr = "t" + to_string(registerCounter);
+    registerCounter++;
+    string assignTo = leftStr + string(" ") + opString + string(" ") + rightStr;
+
+    TACObject obj(registerStr, assignTo, 4, stmt);
+    TACContainer.push_back(obj);
+
     return "RelationalExpr::Emit()";
 }
 
