@@ -90,8 +90,20 @@ string Program::Emit() {
     }
 
     for (int i = 0; i < TACContainer.size(); i++) {
-        cout << "    " + TACContainer[i].lhs + " := " + TACContainer[i].rhs 
-             << endl;
+        switch(TACContainer[i].type) {
+            case label: cout << TACContainer[i].lhs << endl; break;
+            case stmt:
+                cout << "    " + TACContainer[i].lhs
+                     << " := "
+                     << TACContainer[i].rhs << endl;
+            break;
+            case instr:
+                // cout << "    " + TACContainer[i].lhs + TACContainer[i].rhs << endl;
+            break;
+            default:
+                cout << " ERRRORRR !!!! " << endl;
+            break;
+        }
     }
 
     return "Program::Emit()";

@@ -30,7 +30,7 @@ string VarDecl::Emit() {
 
     if (assignTo) {
         string rhsRegName = assignTo->Emit();
-        TACObject tacObj(varName, rhsRegName, 4);
+        TACObject tacObj(varName, rhsRegName, 4, stmt);
         TACContainer.push_back(tacObj);
     }     
 
@@ -49,6 +49,8 @@ void FnDecl::SetFunctionBody(Stmt *b) {
 }
 
 string FnDecl::Emit() {
+    TACObject obj(id->GetName() + string(":"), "", 0, label);
+    TACContainer.push_back(obj);
     return "FnDecl::Emit()";
 }
 
