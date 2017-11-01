@@ -48,11 +48,17 @@ function compare_diff() {
     fi
 }
 
+function rebuild() {
+    make clean
+    make > /dev/null
+}
+
 while true; do
     case "$1" in
         --all  ) compare_all; break ;;
         --alld ) compare_all $1; break ;;
         -d    ) compare_diff $2; break ;;
+        -r    ) rebuild; break ;;
         *     ) usage ;;
     esac
 done
