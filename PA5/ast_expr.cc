@@ -171,9 +171,6 @@ string AssignExpr::Emit() {
     string rhs = right->Emit();
     string opString = op->Emit();
 
-    string registerStr = "t" + to_string(tempRegister);
-    tempRegister++; stackRegister++;
-
     TACContainer.emplace_back(lhs, rhs, 0, stmt);
 
     return registerStr;
