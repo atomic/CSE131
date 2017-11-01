@@ -161,14 +161,22 @@ string RelationalExpr::Emit() {
     tempRegister++; stackRegister++;
     string assignTo = leftStr + string(" ") + opString + string(" ") + rightStr;
 
-    TACObject obj(registerStr, assignTo, 4, stmt);
-    TACContainer.push_back(obj);
+    TACContainer.emplace_back(registerStr, assignTo, 4, stmt);
 
     return registerStr;
 }
 
 string AssignExpr::Emit() {
-    return "AssignExpr Emit";
+    string lhs = left->Emit();
+    string rhs = right->Emit();
+    string opString = op->Emit();
+
+    string registerStr = "t" + to_string(tempRegister);
+    tempRegister++; stackRegister++;
+
+    TACContainer.emplace_back(lhs, rhs, 0, stmt);
+
+    return registerStr;
 }
 
 string LogicalExpr::Emit() {
