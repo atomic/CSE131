@@ -49,7 +49,7 @@ void FnDecl::SetFunctionBody(Stmt *b) {
 }
 
 string FnDecl::Emit() {
-    TACObject obj(id->GetName() + string(":"), "", 0, label);
+    TACObject obj(id->GetName(), "", 0, label);
     TACContainer.push_back(obj);
 
     for(int i = 0; i < formals->NumElements(); i++ ) {
