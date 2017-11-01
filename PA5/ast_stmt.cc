@@ -107,6 +107,13 @@ string Program::Emit() {
                 cout << "    " + TACContainer[i].lhs
                      << " call " + TACContainer[i].rhs << endl;
                 break;
+            case branch:
+                cout << "    if " + TACContainer[i].lhs + " goto "
+                     << TACContainer[i].rhs << endl;
+                break;
+            case jump:
+                cout << "    goto " + TACContainer[i].lhs << endl;
+                break;
             default:
                 cout << " ERRRORRR !!!! " << endl;
         }
@@ -129,14 +136,25 @@ string ForStmt::Emit() {
 }
 
 string WhileStmt::Emit() {
-    labelCounter = 0;
+    string label0 = "L0";
+    string label1 = "L1";
+    string label2 = "L2";
 
-    TACObject obj("L" + to_string(labelCounter), "", 0, label);
-    TACContainer.push_back(obj);
+    TACContainer.emplace_back(label0, "", 0, label);
 
-    test->Emit();
+    TACContainer.emplace_back(test->Emit(), label1, 0, branch);
 
-    return "WhileStmt";
+    TACContainer.emplace_back(label2, "", 0, jump);
+
+    TACContainer.emplace_back(label1, "", 0, label);
+
+    body->Emit();
+    
+    TACContainer.emplace_back(label0, "", 0, jump);
+
+    TACContainer.emplace_back(label2, "", 0, label);
+
+    return "WhileStmt::Emit()";
 }
 
 string IfStmt::Emit() {

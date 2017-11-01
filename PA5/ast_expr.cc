@@ -164,7 +164,7 @@ string RelationalExpr::Emit() {
     TACObject obj(registerStr, assignTo, 4, stmt);
     TACContainer.push_back(obj);
 
-    return "RelationalExpr::Emit()";
+    return registerStr;
 }
 
 string AssignExpr::Emit() {
