@@ -27,6 +27,7 @@ void VarDecl::PrintChildren(int indentLevel) {
 
 string VarDecl::Emit() {
     string varName = GetIdentifier()->GetName();
+    stackRegister++; // add total register during declaration? (what if variable use same name?)
 
     if (assignTo) {
         string rhsRegName = assignTo->Emit();
@@ -49,14 +50,18 @@ void FnDecl::SetFunctionBody(Stmt *b) {
 }
 
 string FnDecl::Emit() {
+    stackRegister = 0;  // beginning of function stack
     TACContainer.emplace_back(id->GetName(), "", 0, label);
     for(int i = 0; i < formals->NumElements(); ++i)
         TACContainer.emplace_back("LoadParam", formals->Nth(i)->GetIdentifier()->GetName(), 0, instr );
+    stackRegister += formals->NumElements();
 
     TACContainer.emplace_back("BeginFunc", "?", 0, instr);
+    size_t begin_pos = TACContainer.size() - 1;
     body->Emit();
     TACContainer.emplace_back("EndFunc", "", 0, instr);
-
+    TACContainer[begin_pos].bytes = stackRegister*4;
+    TACContainer[begin_pos].rhs = to_string(stackRegister*4);
     return "FnDecl::Emit()";
 }
 

@@ -62,7 +62,8 @@ class Node  {
 
     // Declare any global variables you need here
     // And initialize them in ast.cc
-    static int registerCounter;
+    static int stackRegister;
+    static int tempRegister;
     static int labelCounter;
     static vector<TACObject> TACContainer;
 

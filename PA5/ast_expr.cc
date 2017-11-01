@@ -117,8 +117,8 @@ string Call::Emit() {
         TACContainer.emplace_back("PushParam", argName, 0, instr);
     }
 
-    string registerStr = "t" + to_string(registerCounter);
-    registerCounter++;
+    string registerStr = "t" + to_string(tempRegister);
+    tempRegister++; stackRegister++;
     string rhs = string(field->GetName()) + " " + to_string(actuals->NumElements());
 
     TACContainer.emplace_back (registerStr, rhs, 0, call);
@@ -142,8 +142,8 @@ string ArithmeticExpr::Emit() {
     string rightStr = right->Emit();
     string opString = op->Emit();
 
-    string registerStr = "t" + to_string(registerCounter);
-    registerCounter++;
+    string registerStr = "t" + to_string(tempRegister);
+    tempRegister++; stackRegister++;
     string assignTo = leftStr + string(" ") + opString + string(" ") + rightStr;
     TACObject tacObj(registerStr, assignTo, 4, stmt);
 
@@ -157,8 +157,8 @@ string RelationalExpr::Emit() {
     string rightStr = right->Emit();
     string opString = op->Emit();
 
-    string registerStr = "t" + to_string(registerCounter);
-    registerCounter++;
+    string registerStr = "t" + to_string(tempRegister);
+    tempRegister++; stackRegister++;
     string assignTo = leftStr + string(" ") + opString + string(" ") + rightStr;
 
     TACObject obj(registerStr, assignTo, 4, stmt);
