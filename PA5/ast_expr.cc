@@ -112,7 +112,24 @@ string Operator::Emit() {
 }
 
 string Call::Emit() {
-    return "Call::Emit()";
+    for (int i = 0; i < actuals->NumElements(); ++i) {
+        string argName = actuals->Nth(i)->Emit();
+        TACObject tacObj("PushParam", argName, 0, instr);
+
+        TACContainer.push_back(tacObj);
+    }
+
+    string registerStr = "t" + to_string(registerCounter);
+    string rhs = string(field->GetName()) + " " + to_string(actuals->NumElements());
+
+    TACObject tacObj2(registerStr, rhs, 0, call);
+    TACContainer.push_back(tacObj2);
+
+    int deallocate = actuals->NumElements() * 4;
+    TACObject tacObj3("PopParam", to_string(deallocate), 0, instr);
+    TACContainer.push_back(tacObj3);
+
+    return registerStr;
 }
 
 string VarExpr::Emit() {

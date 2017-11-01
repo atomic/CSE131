@@ -42,7 +42,7 @@
 using namespace std;
 class SymbolTable;
 
-enum tactype { label, instr, stmt };
+enum tactype { label, instr, stmt, call };
 
 struct TACObject{
     string lhs;    // lhs of the TAC
@@ -51,8 +51,7 @@ struct TACObject{
     tactype type;
 
     TACObject(string lhs, string rhs, int b, tactype type) : 
-    lhs(lhs), rhs(rhs), bytes(b), type(type)
-    {}
+    lhs(lhs), rhs(rhs), bytes(b), type(type) { }
 };
 
 class Node  {

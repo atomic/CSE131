@@ -91,19 +91,24 @@ string Program::Emit() {
 
     for (int i = 0; i < TACContainer.size(); i++) {
         switch(TACContainer[i].type) {
-            case label: cout << TACContainer[i].lhs << endl; break;
+            case label:
+                cout << TACContainer[i].lhs << endl;
+                break;
             case stmt:
                 cout << "    " + TACContainer[i].lhs
                      << " := "
                      << TACContainer[i].rhs << endl;
-            break;
+                break;
             case instr:
                 cout << "    " + TACContainer[i].lhs 
                      << " " + TACContainer[i].rhs << endl;
-            break;
+                break;
+            case call:
+                cout << "    " + TACContainer[i].lhs
+                     << " call " + TACContainer[i].rhs << endl;
+                break;
             default:
                 cout << " ERRRORRR !!!! " << endl;
-            break;
         }
     }
 
