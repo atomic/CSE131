@@ -92,7 +92,7 @@ string Program::Emit() {
     for (int i = 0; i < TACContainer.size(); i++) {
         switch(TACContainer[i].type) {
             case label:
-                cout << TACContainer[i].lhs << endl;
+                cout << TACContainer[i].lhs + ":" << endl;
                 break;
             case stmt:
                 cout << "    " + TACContainer[i].lhs
@@ -129,6 +129,13 @@ string ForStmt::Emit() {
 }
 
 string WhileStmt::Emit() {
+    labelCounter = 0;
+
+    TACObject obj("L" + to_string(labelCounter), "", 0, label);
+    TACContainer.push_back(obj);
+
+    test->Emit();
+
     return "WhileStmt";
 }
 

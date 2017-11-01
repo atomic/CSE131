@@ -49,24 +49,13 @@ void FnDecl::SetFunctionBody(Stmt *b) {
 }
 
 string FnDecl::Emit() {
-    TACObject obj(id->GetName(), "", 0, label);
-    TACContainer.push_back(obj);
+    TACContainer.emplace_back(id->GetName(), "", 0, label);
+    for(int i = 0; i < formals->NumElements(); ++i)
+        TACContainer.emplace_back("LoadParam", formals->Nth(i)->GetIdentifier()->GetName(), 0, instr );
 
-    for(int i = 0; i < formals->NumElements(); i++ ) {
-        TACObject o("LoadParam",
-                formals->Nth(i)->GetIdentifier()->GetName(),
-                0, instr
-                );
-        TACContainer.push_back(o);
-    }
-
-    TACObject t1("BeginFunc", "?", 0, instr);
-    TACContainer.push_back(t1);
-
+    TACContainer.emplace_back("BeginFunc", "?", 0, instr);
     body->Emit();
-
-    TACObject t2("EndFunc", "", 0, instr);
-    TACContainer.push_back(t2);
+    TACContainer.emplace_back("EndFunc", "", 0, instr);
 
     return "FnDecl::Emit()";
 }
