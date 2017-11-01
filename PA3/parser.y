@@ -43,13 +43,23 @@ void yyerror(const char *msg); // standard error-handling routine
     bool boolConstant;
     char identifier[MaxIdentLen+1]; // +1 for terminating null
 
-    Type *varType;
-    Decl *decl;
-    VarDecl *varDecl;
-    List<Decl*> *declList;
-    Operator *oper;
-    Expr *expr;
-    BreakStmt *breakStmt;
+    Type      * varType;
+    Decl      * decl;               // global declaration
+    List<Decl *> * declList;
+    VarDecl   * varDecl;
+    Operator  * oper;
+    Expr      * expr;
+
+    List<Stmt*> * stmtList;
+    Stmt        * stmt;
+    ReturnStmt  * returnStmt;
+    BreakStmt * breakStmt;
+
+    DeclStmt    * declStmt;
+
+    LoopStmt  * loopStmt;
+    ForStmt   * forStmt;
+    WhileStmt * whileStmt;
 }
 
 /* Tokens
@@ -104,23 +114,25 @@ void yyerror(const char *msg); // standard error-handling routine
 %type <integerConstant>  function_definition 
 %type <oper>             assignment_operator 
 %type <expr>             expression 
+
+%type <stmtList>         statement_list
+%type <stmt>             statement
+%type <declStmt>         decl_statement
+
 %type <integerConstant>  function_prototype 
 %type <integerConstant>  compound_statement_with_scope 
 %type <integerConstant>  function_prototype_header
 %type <integerConstant>  parameter_declaration_list
 %type <integerConstant>  parameter_declaration
-%type <integerConstant>  statement_list
-%type <integerConstant>  statement
 %type <integerConstant>  simple_statement
-%type <integerConstant>  expression_statement
 %type <integerConstant>  selection_statement
-%type <integerConstant>  iteration_statement
-%type <integerConstant>  return_statement
-%type <integerConstant>  decl_statement
+%type <expr>             expression_statement
+%type <loopStmt>         iteration_statement
+%type <returnStmt>       return_statement
 %type <breakStmt>        break_statement
-%type <integerConstant>  while_statement
-%type <integerConstant>  for_statement
-%type <integerConstant>  condition
+%type <whileStmt>        while_statement
+%type <forStmt>          for_statement
+%type <expr>             condition
 %type <integerConstant>  assignment_expression
 %type <integerConstant>  arithmetic_expression
 %type <integerConstant>  relational_expression
@@ -163,7 +175,8 @@ Decl      :    single_declaration  { $$ = $1; }
           |    function_definition
           ;
 
-single_declaration  : type_specifier T_Identifier T_Semicolon   { $$ = new VarDecl(new Identifier(@2, $2), $1); }
+single_declaration  : type_specifier T_Identifier T_Semicolon
+                        { $$ = new VarDecl(new Identifier(@2, $2), $1); }
                     | type_specifier T_Identifier assignment_operator expression T_Semicolon
                     ;
 
@@ -195,7 +208,9 @@ compound_statement_with_scope : T_LeftBrace statement_list T_RightBrace
                               ;
 
 statement_list        : statement_list statement
+                        { ($$=$1)->Append($2); }
                       | statement
+                        { ($$ = new List<Stmt*>)->Append($1); }
                       ;
 
 statement             : compound_statement_with_scope
@@ -218,23 +233,29 @@ selection_statement   : T_If T_LeftParen expression T_RightParen compound_statem
                       | T_If T_LeftParen expression T_RightParen compound_statement_with_scope T_Else compound_statement_with_scope
                       ;
 
-iteration_statement   : while_statement
-                      | for_statement
+iteration_statement   : while_statement { $$ = $1; }
+                      | for_statement   { $$ = $1; }
                       ;
 
 while_statement       : T_While T_LeftParen condition T_RightParen statement
+                        { $$ = new WhileStmt($3, $5); }
                       ;
 
 for_statement         : T_For T_LeftParen expression_statement expression_statement expression T_RightParen statement
+                        {
+                            $$ = new ForStmt($3, $4, $5, $7); 
+                        }
                       ;
 
 condition             : expression
                       ;
 
 return_statement      : T_Return expression_statement
+                       { $$ = new ReturnStmt(@2, $2); }
                       ;
 
 decl_statement        : single_declaration
+                        { $$ = new DeclStmt(@1, $1); }
                       ;
 
 break_statement       : T_Break T_Semicolon   { $$ = new BreakStmt(@1); }
@@ -251,11 +272,21 @@ expression            : assignment_expression
 assignment_expression : unary_expression assignment_operator expression
                       ;
 
-assignment_operator   : T_Equal   
+assignment_operator   : T_Equal
+                        { const char op = '=';
+                          $$ = new Operator(@1, &op); }
                       | T_MulAssign
+                        { const char *op = "*=";
+                          $$ = new Operator(@1, op); }
                       | T_DivAssign
+                        { const char *op = "/=";
+                          $$ = new Operator(@1, op); }
                       | T_AddAssign
+                        { const char *op = "+=";
+                          $$ = new Operator(@1, op); }
                       | T_SubAssign
+                        { const char *op = "-=";
+                          $$ = new Operator(@1, op); }
                       ;
 
 arithmetic_expression : expression T_Plus expression
