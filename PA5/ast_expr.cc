@@ -125,20 +125,18 @@ string EmptyExpr::Emit() {
 }
 
 string ArithmeticExpr::Emit() {
-    string leftString = left->Emit();
-    string rightString = right->Emit();
+    string leftStr = left->Emit();
+    string rightStr = right->Emit();
     string opString = op->Emit();
 
-    string registerString = "t" + to_string(registerCounter);
+    string regStr = "t" + to_string(registerCounter);
     registerCounter++;
-    TACObject tacObj;
-    tacObj.tac = string("    ") + registerString + string(" := ") + leftString +
-        string(" ") + opString + string(" ") + rightString;
-    tacObj.bytes = 4;
+    string assignTo = leftStr + string(" ") + opString + string(" ") + rightStr;
+    TACObject tacObj(regStr, assignTo, 4);
 
     TACContainer.push_back(tacObj);
 
-    return registerString;
+    return regStr;
 }
 
 string RelationalExpr::Emit() {

@@ -43,8 +43,11 @@ using namespace std;
 class SymbolTable;
 
 struct TACObject{
-    string tac;    // three address code
+    string lhs;    // lhs of the TAC
+    string rhs;    // rhs of the TAC
     int bytes;     // # of bytes for this TAC
+
+    TACObject(string lhs, string rhs, int b) : lhs(lhs), rhs(rhs), bytes(b) { }
 };
 
 class Node  {

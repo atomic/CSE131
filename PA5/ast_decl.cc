@@ -30,9 +30,7 @@ string VarDecl::Emit() {
 
     if (assignTo) {
         string rhsRegName = assignTo->Emit();
-        TACObject tacObj;
-        tacObj.tac = string("    ") + varName + string(" := ") + rhsRegName;
-        tacObj.bytes = 4;
+        TACObject tacObj(varName, rhsRegName, 4);
         TACContainer.push_back(tacObj);
     }     
 
