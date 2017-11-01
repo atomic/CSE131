@@ -61,3 +61,6 @@ y.tab.h
 mysamples/
 temp.out
 *.un~
+*/.idea/*
+*/CMakeLists.txt
+*/cmake-build-debug
