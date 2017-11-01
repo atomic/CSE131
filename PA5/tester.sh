@@ -29,6 +29,9 @@ function compare_all() {
             echo "${TXT_GREEN}[PASSED]${TXT_RESET} $file"
         else
             echo "${TXT_RED}[FAILED]${TXT_RESET} $file"
+            if [ -n "$1" ]; then
+                compare_diff ${filename}
+            fi
         fi
 
     done
@@ -38,15 +41,17 @@ function compare_all() {
 
 function compare_diff() {
     if [[ $(which colordiff) =~ "not found" ]]; then
-        echo "colordiff is not installed. install it" >&2
-        exit 1
+        diff -yW"`tput cols`" <(./parser < samples/$1.java) <(cat samples/$1.out)
+        echo "Note: install colordiff for nicer output"
+    else
+        colordiff -yW"`tput cols`" <(./parser < samples/$1.java) <(cat samples/$1.out)
     fi
-    colordiff -yW"`tput cols`" <(./parser < samples/$1.java) <(cat samples/$1.out)
 }
 
 while true; do
     case "$1" in
-        --all ) compare_all; break ;;
+        --all  ) compare_all; break ;;
+        --alld ) compare_all $1; break ;;
         -d    ) compare_diff $2; break ;;
         *     ) usage ;;
     esac
