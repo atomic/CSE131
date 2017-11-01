@@ -51,6 +51,16 @@ void FnDecl::SetFunctionBody(Stmt *b) {
 string FnDecl::Emit() {
     TACObject obj(id->GetName() + string(":"), "", 0, label);
     TACContainer.push_back(obj);
+    for(int i = 0; i < formals->NumElements(); i++ ) {
+        TACObject o("LoadParam",
+                formals->Nth(i)->GetIdentifier()->GetName(),
+                0, instr
+                );
+        TACContainer.push_back(o);
+    }
+    TACContainer.push_back(
+            TACObject("BeginFunc", "?", 0, instr);
+    );
     return "FnDecl::Emit()";
 }
 

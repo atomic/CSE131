@@ -98,7 +98,7 @@ string Program::Emit() {
                      << TACContainer[i].rhs << endl;
             break;
             case instr:
-                // cout << "    " + TACContainer[i].lhs + TACContainer[i].rhs << endl;
+                cout << "    " + TACContainer[i].lhs + " " + TACContainer[i].rhs << endl;
             break;
             default:
                 cout << " ERRRORRR !!!! " << endl;
