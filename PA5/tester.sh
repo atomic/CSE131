@@ -37,10 +37,11 @@ function compare_all() {
 }
 
 function compare_diff() {
-    mkdir -p ${OUTFILES}
-    ./parser < samples/$1.java > ${OUTFILES}/$1.out
-    vimdiff ${OUTFILES}/$1.out samples/$1.out;
-    rm -rf ${OUTFILES}
+    if [[ $(which colordiff) =~ "not found" ]]; then
+        echo "colordiff is not installed. install it" >&2
+        exit 1
+    fi
+    colordiff -yW"`tput cols`" <(./parser < samples/$1.java) <(cat samples/$1.out)
 }
 
 while true; do
