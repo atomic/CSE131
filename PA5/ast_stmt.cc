@@ -183,8 +183,7 @@ string IfStmt::Emit() {
 
 string ReturnStmt::Emit() {
     string rhs = expr->Emit();
-    TACObject o("Return", rhs, 0, instr);
-    TACContainer.push_back(o);
+    TACContainer.emplace_back ("Return", rhs, 0, instr);
 
     return "ReturnStmt Emit()";
 }

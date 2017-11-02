@@ -31,8 +31,7 @@ string VarDecl::Emit() {
 
     if (assignTo) {
         string rhsRegName = assignTo->Emit();
-        TACObject tacObj(varName, rhsRegName, 4, stmt);
-        TACContainer.push_back(tacObj);
+        TACContainer.emplace_back (varName, rhsRegName, 4, stmt);
     }     
 
     return "VarDecl::Emit()";
