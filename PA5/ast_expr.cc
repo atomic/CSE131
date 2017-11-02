@@ -169,6 +169,9 @@ string AssignExpr::Emit() {
     string rhs = right->Emit();
     string opString = op->Emit();
 
+    if (opString.compare("=") != 0)
+        rhs = (lhs + " " + opString[0] + " " + rhs);
+
     TACContainer.emplace_back(lhs, rhs, 0, stmt);
 
     return "AssignExpr::Emit()";

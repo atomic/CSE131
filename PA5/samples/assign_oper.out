@@ -1,0 +1,16 @@
+main:
+    BeginFunc 12
+    a := 10
+    b := 5
+    a := a + 20
+    b := b - 10
+    a := a * 4
+    a := a / 60
+    t1 := a == 2
+    if t1 goto L0
+    goto L1
+L0:
+    b := 3
+    goto L1
+L1:
+    EndFunc 
