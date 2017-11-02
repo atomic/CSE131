@@ -158,6 +158,21 @@ string WhileStmt::Emit() {
 }
 
 string IfStmt::Emit() {
+    string label0 = "L0";
+    string label1 = "L1";
+
+    TACContainer.emplace_back(test->Emit(), label0, 0, branch);
+
+    TACContainer.emplace_back(label1, "", 0, jump);
+
+    TACContainer.emplace_back(label0, "", 0, label);
+
+    body->Emit();
+
+    TACContainer.emplace_back(label1, "", 0, jump);
+
+    TACContainer.emplace_back(label1, "", 0, label);
+
     return "ifStmt";
 }
 
