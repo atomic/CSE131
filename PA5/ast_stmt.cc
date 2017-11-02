@@ -91,31 +91,23 @@ string Program::Emit() {
 
     for (int i = 0; i < TACContainer.size(); i++) {
         switch(TACContainer[i].type) {
-            case label:
-                cout << TACContainer[i].lhs + ":" << endl;
-                break;
-            case stmt:
-                cout << "    " + TACContainer[i].lhs
-                     << " := "
-                     << TACContainer[i].rhs << endl;
-                break;
-            case instr:
-                cout << "    " + TACContainer[i].lhs 
-                     << " " + TACContainer[i].rhs << endl;
-                break;
-            case call:
-                cout << "    " + TACContainer[i].lhs
-                     << " call " + TACContainer[i].rhs << endl;
-                break;
-            case branch:
-                cout << "    if " + TACContainer[i].lhs + " goto "
-                     << TACContainer[i].rhs << endl;
-                break;
-            case jump:
-                cout << "    goto " + TACContainer[i].lhs << endl;
-                break;
-            default:
-                cout << " ERRRORRR !!!! " << endl;
+            case label: cout << TACContainer[i].lhs + ":" << endl;     break;
+
+            case stmt:  cout << "    " + TACContainer[i].lhs
+                             << " := " << TACContainer[i].rhs << endl; break;
+
+            case instr: cout << "    " + TACContainer[i].lhs
+                             << " "    + TACContainer[i].rhs << endl; break;
+
+            case call:  cout << "    "   + TACContainer[i].lhs
+                             << " call " + TACContainer[i].rhs << endl; break;
+
+            case branch: cout << "    if " + TACContainer[i].lhs + " goto "
+                             << TACContainer[i].rhs << endl; break;
+
+            case jump:   cout << "    goto " + TACContainer[i].lhs << endl; break;
+
+            default: cout << " ERRRORRR !!!! " << endl;
         }
     }
 
@@ -132,12 +124,7 @@ string StmtBlock::Emit() {
 }
 
 string ForStmt::Emit() {
-//    init->Print(10,"(for, init)"); // debug
-//    init->Print(10,"(for, step)"); // debug
-//    cout << "" << endl;
     string inc_var = init->Emit();
-//    cout << "increment variable: " << inc_var << endl;
-//    cout << "test variable: " << test->Emit() << endl;
     string label0 = "L0";
     string label1 = "L1";
     string label2 = "L2";
@@ -158,17 +145,11 @@ string WhileStmt::Emit() {
     string label2 = "L2";
 
     TACContainer.emplace_back(label0, "", 0, label);
-
     TACContainer.emplace_back(test->Emit(), label1, 0, branch);
-
     TACContainer.emplace_back(label2, "", 0, jump);
-
     TACContainer.emplace_back(label1, "", 0, label);
-
     body->Emit();
-    
     TACContainer.emplace_back(label0, "", 0, jump);
-
     TACContainer.emplace_back(label2, "", 0, label);
 
     return "WhileStmt::Emit()";
@@ -201,8 +182,7 @@ string IfStmt::Emit() {
 
 string ReturnStmt::Emit() {
     string rhs = expr->Emit();
-    TACObject o("Return", rhs, 0, instr);
-    TACContainer.push_back(o);
+    TACContainer.emplace_back ("Return", rhs, 0, instr);
 
     return "ReturnStmt Emit()";
 }

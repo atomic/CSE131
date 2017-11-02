@@ -145,9 +145,7 @@ string ArithmeticExpr::Emit() {
     string registerStr = "t" + to_string(tempRegister);
     tempRegister++; stackRegister++;
     string assignTo = leftStr + string(" ") + opString + string(" ") + rightStr;
-    TACObject tacObj(registerStr, assignTo, 4, stmt);
-
-    TACContainer.push_back(tacObj);
+    TACContainer.emplace_back (registerStr, assignTo, 4, stmt);
 
     return registerStr;
 }
