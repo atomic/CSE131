@@ -192,13 +192,13 @@ string EqualityExpr::Emit() {
     TACContainer.emplace_back(registerStr, assignTo, 4, stmt);
 
     return registerStr;
-
-    return "EqualityExpr::Emit()";   
 }
 
 string PostfixExpr::Emit() {
-    string assignTo = " x + 1";
-    right->Emit();
-    TACContainer.emplace_back(left->Emit(), assignTo, 0, stmt);
+    string leftStr = left->Emit();
+    string opString = op->Emit();
+    string assignTo = leftStr + opString[0] + "1"; 
+    TACContainer.emplace_back(leftStr, assignTo, 0, stmt);
+
     return "PostfixExpr::Emit()";
 }
