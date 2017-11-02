@@ -158,6 +158,7 @@ string WhileStmt::Emit() {
 }
 
 string IfStmt::Emit() {
+    string exitLabel = (elseBody) ? "L2" : "L1";
     string label0 = "L0";
     string label1 = "L1";
 
@@ -169,9 +170,15 @@ string IfStmt::Emit() {
 
     body->Emit();
 
-    TACContainer.emplace_back(label1, "", 0, jump);
+    TACContainer.emplace_back(exitLabel, "", 0, jump);
 
-    TACContainer.emplace_back(label1, "", 0, label);
+    if (elseBody) {
+        TACContainer.emplace_back(label1, "", 0, label);
+        elseBody->Emit();
+        TACContainer.emplace_back(exitLabel, "", 0, jump);
+    }
+
+    TACContainer.emplace_back(exitLabel, "", 0, label);
 
     return "ifStmt";
 }

@@ -177,10 +177,22 @@ string AssignExpr::Emit() {
 }
 
 string LogicalExpr::Emit() {
-    return "LogicalExpr::Emit()"; 
+    return "LogicalExpr::Emit()";
 }
 
 string EqualityExpr::Emit() {
+    string leftStr = left->Emit();
+    string rightStr = right->Emit();
+    string opString = op->Emit();
+
+    string registerStr = "t" + to_string(tempRegister);
+    tempRegister++; stackRegister++;
+    string assignTo = leftStr + string(" ") + opString + string(" ") + rightStr;
+
+    TACContainer.emplace_back(registerStr, assignTo, 4, stmt);
+
+    return registerStr;
+
     return "EqualityExpr::Emit()";   
 }
 
