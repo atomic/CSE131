@@ -1,0 +1,14 @@
+    t1 call readIntFromSTDIN 0
+    PopParam 0
+    a := t1
+    t2 call readIntFromSTDIN 0
+    PopParam 0
+    b := t2
+main:
+    BeginFunc 28
+    t3 := a + b
+    c := t3
+    PushParam c
+    t4 call printInt 1
+    PopParam 4
+    EndFunc

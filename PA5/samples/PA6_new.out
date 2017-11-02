@@ -1,0 +1,10 @@
+    t1 call readIntFromSTDIN 0
+    a := t1
+    t2 call readIntFromSTDIN 0
+    b := t2
+main:
+    BeginFunc 24
+    t3 := a + b
+    c := t3
+    Print c
+    EndFunc 
