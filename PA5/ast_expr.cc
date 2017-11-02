@@ -197,7 +197,7 @@ string EqualityExpr::Emit() {
 string PostfixExpr::Emit() {
     string leftStr = left->Emit();
     string opString = op->Emit();
-    string assignTo = leftStr + opString[0] + "1"; 
+    string assignTo = leftStr + " " + opString[0] + " 1";
     TACContainer.emplace_back(leftStr, assignTo, 0, stmt);
 
     return "PostfixExpr::Emit()";

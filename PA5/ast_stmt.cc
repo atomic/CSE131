@@ -146,7 +146,7 @@ string ForStmt::Emit() {
     TACContainer.emplace_back(label2, "", 0, jump);
     TACContainer.emplace_back(label1, "", 0, label);
     body->Emit();
-    TACContainer.emplace_back("a", "a + 1", 0, stmt); // What is this?
+    step->Emit();
     TACContainer.emplace_back(label0, "", 0, jump);
     TACContainer.emplace_back(label2, "", 0, label);
     return "ForStmt::Emit()";
