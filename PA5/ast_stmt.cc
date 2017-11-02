@@ -131,7 +131,24 @@ string StmtBlock::Emit() {
     return "StmtBlock::Emit()";
 }
 
-string ForStmt::Emit() { 
+string ForStmt::Emit() {
+//    init->Print(10,"(for, init)"); // debug
+//    init->Print(10,"(for, step)"); // debug
+//    cout << "" << endl;
+    string inc_var = init->Emit();
+//    cout << "increment variable: " << inc_var << endl;
+//    cout << "test variable: " << test->Emit() << endl;
+    string label0 = "L0";
+    string label1 = "L1";
+    string label2 = "L2";
+    TACContainer.emplace_back(label0, "", 0, label);
+    TACContainer.emplace_back(test->Emit(), label1, 0, branch);
+    TACContainer.emplace_back(label2, "", 0, jump);
+    TACContainer.emplace_back(label1, "", 0, label);
+    body->Emit();
+    TACContainer.emplace_back("a", "a + 1", 0, stmt); // What is this?
+    TACContainer.emplace_back(label0, "", 0, jump);
+    TACContainer.emplace_back(label2, "", 0, label);
     return "ForStmt::Emit()";
 }
 
