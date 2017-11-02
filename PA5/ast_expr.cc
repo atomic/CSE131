@@ -173,7 +173,7 @@ string AssignExpr::Emit() {
 
     TACContainer.emplace_back(lhs, rhs, 0, stmt);
 
-    return registerStr;
+    return "AssignExpr::Emit()";
 }
 
 string LogicalExpr::Emit() {
