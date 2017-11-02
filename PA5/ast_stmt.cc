@@ -125,9 +125,11 @@ string StmtBlock::Emit() {
 
 string ForStmt::Emit() {
     string inc_var = init->Emit();
-    string label0 = "L0";
-    string label1 = "L1";
-    string label2 = "L2";
+
+    string label0 = "L" + to_string(labelCounter++);
+    string label1 = "L" + to_string(labelCounter++);
+    string label2 = "L" + to_string(labelCounter++);
+    
     TACContainer.emplace_back(label0, "", 0, label);
     TACContainer.emplace_back(test->Emit(), label1, 0, branch);
     TACContainer.emplace_back(label2, "", 0, jump);
@@ -140,9 +142,9 @@ string ForStmt::Emit() {
 }
 
 string WhileStmt::Emit() {
-    string label0 = "L0";
-    string label1 = "L1";
-    string label2 = "L2";
+    string label0 = "L" + to_string(labelCounter++);
+    string label1 = "L" + to_string(labelCounter++);
+    string label2 = "L" + to_string(labelCounter++);
 
     TACContainer.emplace_back(label0, "", 0, label);
     TACContainer.emplace_back(test->Emit(), label1, 0, branch);
