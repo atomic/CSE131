@@ -112,18 +112,34 @@ string Operator::Emit() {
 }
 
 string Call::Emit() {
+    bool print_func = false;
+    bool stdin_func = false; 
+
+    if (strcmp(field->GetName(), "readIntFromSTDIN") == 0)
+        stdin_func = true;
+
+    if (strcmp(field->GetName(), "printInt") == 0)
+        print_func = true;
+
     for (int i = 0; i < actuals->NumElements(); ++i) {
         string argName = actuals->Nth(i)->Emit();
-        TACContainer.emplace_back("PushParam", argName, 0, instr);
+        if (!print_func && !stdin_func) 
+            TACContainer.emplace_back("PushParam", argName, 0, instr);
     }
 
-    string registerStr = "t" + to_string(tempRegister);
-    tempRegister++; stackRegister++;
-    string rhs = string(field->GetName()) + " " + to_string(actuals->NumElements());
+    string registerStr = "";
 
-    TACContainer.emplace_back (registerStr, rhs, 0, call);
-    int deallocate = actuals->NumElements() * 4;
-    TACContainer.emplace_back("PopParam", to_string(deallocate), 0, instr);
+    if (print_func) {
+        TACContainer.emplace_back("Print", actuals->Nth(0)->Emit(), 0, instr); 
+    } else {
+        registerStr = "t" + to_string(tempRegister);
+        tempRegister++; stackRegister++;
+        string rhs = string(field->GetName()) + " " + to_string(actuals->NumElements());
+        TACContainer.emplace_back(registerStr, rhs, 0, call);
+    }
+
+    if (!print_func && !stdin_func)
+        TACContainer.emplace_back("PopParam", to_string(actuals->NumElements() * 4), 0, instr);
 
     return registerStr;
 }
