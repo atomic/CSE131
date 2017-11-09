@@ -184,7 +184,7 @@ string IfStmt::Emit() {
 
 string ReturnStmt::Emit() {
     string rhs = expr->Emit();
-    TACContainer.emplace_back ("Return", rhs, 0, instr);
+    TACContainer.emplace_back("Return", rhs, 0, instr);
 
     return "ReturnStmt Emit()";
 }
