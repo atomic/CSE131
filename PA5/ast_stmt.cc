@@ -6,7 +6,7 @@
 #include "ast_type.h"
 #include "ast_decl.h"
 #include "ast_expr.h"
-
+#include <cctype>
 
 Program::Program(List<Decl*> *d) {
     Assert(d != NULL);
@@ -81,33 +81,98 @@ void DeclStmt::PrintChildren(int indentLevel) {
     varDecl->Print(indentLevel+1);
 }
 
-string Program::Emit() {
-    if ( decls->NumElements() > 0 ) {
-      for ( int i = 0; i < decls->NumElements(); ++i ) {
-        Decl *d = decls->Nth(i);
-        d->Emit();
-      }
+void split(const string& s, const string& delim, vector<string>& v) {
+    int start = 0;
+    int end = s.find(delim, start);
+    v.clear();
+
+    while (end != string::npos) {
+        v.push_back(s.substr(start, end - start));
+        start = end + delim.length();
+        end = s.find(delim, start);
     }
 
-    for (int i = 0; i < TACContainer.size(); i++) {
-        switch(TACContainer[i].type) {
-            case label: cout << TACContainer[i].lhs + ":" << endl;     break;
+   v.push_back(s.substr(start, s.length()));
+}
 
-            case stmt:  cout << "    " + TACContainer[i].lhs
-                             << " := " << TACContainer[i].rhs << endl; break;
+bool isNumeric(const string& s) {
+    return s.find_first_not_of("0123456789") == string::npos;
+}
 
-            case instr: cout << "    " + TACContainer[i].lhs
-                             << " "    + TACContainer[i].rhs << endl; break;
+vector<TACObject> constantFolding(vector<TACObject> TACContainer) {
+    vector<string> split_result;
 
-            case call:  cout << "    "   + TACContainer[i].lhs
-                             << " call " + TACContainer[i].rhs << endl; break;
+    for (int i = 0; i < TACContainer.size(); ++i) {
 
-            case branch: cout << "    if " + TACContainer[i].lhs + " goto "
-                             << TACContainer[i].rhs << endl; break;
+        if (TACContainer[i].type != stmt)
+            continue;
+    
+        split(TACContainer[i].rhs, " ", split_result);
+        
+        if (split_result.size() != 3)
+            continue;
 
-            case jump:   cout << "    goto " + TACContainer[i].lhs << endl; break;
+        bool qualified = isNumeric(split_result[0]) && isNumeric(split_result[2]);
 
-            default: cout << " ERRRORRR !!!! " << endl;
+        if (qualified) {
+            int a = stoi(split_result[0]);
+            int b = stoi(split_result[2]);
+
+            string op = split_result[1];
+            if (op.compare("+") == 0)
+                TACContainer[i].rhs = to_string(a + b);
+            else if (op.compare("-") == 0)
+                TACContainer[i].rhs = to_string(a - b);
+            else if (op.compare("/") == 0)
+                TACContainer[i].rhs = to_string(a / b);
+            else if (op.compare("*") == 0) {
+                TACContainer[i].rhs = to_string(a * b);
+            }
+        }
+    }
+
+    return TACContainer;
+}
+
+string Program::Emit() {
+    if ( decls->NumElements() > 0 ) {
+        for ( int i = 0; i < decls->NumElements(); ++i ) {
+            Decl *d = decls->Nth(i);
+            d->Emit();
+        }
+    }
+
+    vector<TACObject> optimized_TACContainer = constantFolding(TACContainer);
+    //vector<TACObject> optimized_TACContainer = constantPropagation(TACContainer);
+    //vector<TACObject> optimized_TACContainer = deadCodeElimination(TACContainer);
+
+    for (int i = 0; i < optimized_TACContainer.size(); ++i) {
+        switch(optimized_TACContainer[i].type) {
+            case label:  cout << optimized_TACContainer[i].lhs + ":" 
+                         << endl; 
+                         break;
+
+            case stmt:   cout << "    " + optimized_TACContainer[i].lhs
+                         << " := " << optimized_TACContainer[i].rhs << endl; 
+                         break;
+
+            case instr:  cout << "    " + optimized_TACContainer[i].lhs
+                         << " " + optimized_TACContainer[i].rhs << endl; 
+                         break;
+
+            case call:   cout << "    " + optimized_TACContainer[i].lhs
+                         << " call " + optimized_TACContainer[i].rhs << endl; 
+                         break;
+
+            case branch: cout << "    if " + optimized_TACContainer[i].lhs 
+                         << " goto " + optimized_TACContainer[i].rhs << endl; 
+                         break;
+
+            case jump:   cout << "    goto " + optimized_TACContainer[i].lhs 
+                         << endl; 
+                         break;
+
+            default:     cout << " ERRRORRR !!!! " << endl;
         }
     }
 
@@ -119,7 +184,7 @@ string StmtBlock::Emit() {
         Stmt* ith_statement = stmts->Nth(i);
         ith_statement->Emit();
     }
-    
+
     return "StmtBlock::Emit()";
 }
 
@@ -129,7 +194,7 @@ string ForStmt::Emit() {
     string label0 = "L" + to_string(labelCounter++);
     string label1 = "L" + to_string(labelCounter++);
     string label2 = "L" + to_string(labelCounter++);
-    
+
     TACContainer.emplace_back(label0, "", 0, label);
     TACContainer.emplace_back(test->Emit(), label1, 0, branch);
     TACContainer.emplace_back(label2, "", 0, jump);
@@ -168,7 +233,7 @@ string IfStmt::Emit() {
     TACContainer.emplace_back(ifLabel, "", 0, label);
 
     body->Emit();
-    
+
     string exitLabel = (elseBody) ? "L" + to_string(labelCounter++) : elseLabel;
     TACContainer.emplace_back(exitLabel, "", 0, jump);
 
@@ -193,4 +258,3 @@ string DeclStmt::Emit() {
     varDecl->Emit();
     return "DeclStmt Emit()";
 }
-
