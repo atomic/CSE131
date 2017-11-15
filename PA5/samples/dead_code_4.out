@@ -1,4 +1,3 @@
-used: a_used, d_used, e_used, 
 main:
     BeginFunc 24
     a_used := 1

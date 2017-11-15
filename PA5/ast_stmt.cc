@@ -150,9 +150,10 @@ vector<TACObject> deadCodeElimination(vector<TACObject> TACContainer) {
         if (taco.type == stmt) {
             split(taco.rhs, " ", used_tokens, false); // false here means update the used_tokens, instead of reseting it
             variables.emplace_back(j, taco.lhs);
-        } else if (taco.type == branch) { // for bramch, lhs may contain variables used in the code
-            split(taco.lhs, " ", used_tokens, false);
-        }
+        } else if (taco.type == branch)
+            split(taco.lhs, " ", used_tokens, false); // for branch, lhs may contain variables used in the code
+        else if (taco.type == instr && taco.lhs == "Return")
+            split(taco.rhs, " ", used_tokens, false); // for return, rhs may contains variable
     }
 
     // Cleans up token that is not a variable (integer and operators)
@@ -161,12 +162,22 @@ vector<TACObject> deadCodeElimination(vector<TACObject> TACContainer) {
             used_tokens.erase(used_tokens.begin() + i-- );
 
     set<string> rhs_unique(used_tokens.begin(), used_tokens.end());
+//    cout << "used: ";
+//    for (auto used : rhs_unique)
+//        cout << used << ", ";
+//    cout << endl;
 
-    // remove varible that does not appear in rhs_token
-    for (auto var : variables)
-        if (rhs_unique.find(var.second) == rhs_unique.end())
-            TACContainer.erase(TACContainer.begin() + var.first);
 
+    // remove varible that does not appear in rhs_token (add index to remove first)
+    vector<int> index_to_delete;
+    for (auto var : variables) {
+        if (rhs_unique.find(var.second) == rhs_unique.end()) {
+//            cout << " will delete : " << var.second << " at pos " << var.first << endl;
+            index_to_delete.insert(index_to_delete.begin(), var.first);
+        }
+    }
+    for (auto item : index_to_delete)
+        TACContainer.erase(TACContainer.begin() + item);
     return TACContainer;
 }
 
