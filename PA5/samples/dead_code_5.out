@@ -1,0 +1,19 @@
+main:
+    BeginFunc 40
+    a_used := 1
+    d_used := 0
+    e_used := 0
+    t1 := a_used < 2
+    if t1 goto L0
+    goto L1
+L0:
+    a_used := a_used + 1
+    goto L2
+L1:
+    t2 := a_used * 3
+    a_used := t2
+    goto L2
+L2:
+    t3 := d_used + e_used
+    Return t3
+    EndFunc 
