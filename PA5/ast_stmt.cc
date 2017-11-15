@@ -81,10 +81,12 @@ void DeclStmt::PrintChildren(int indentLevel) {
     varDecl->Print(indentLevel+1);
 }
 
-void split(const string& s, const string& delim, vector<string>& v) {
+void split(const string& s, const string& delim, vector<string>& v, bool clear = true) {
     int start = 0;
     int end = s.find(delim, start);
-    v.clear();
+
+    if (clear)
+        v.clear();
 
     while (end != string::npos) {
         v.push_back(s.substr(start, end - start));
@@ -97,6 +99,10 @@ void split(const string& s, const string& delim, vector<string>& v) {
 
 bool isNumeric(const string& s) {
     return s.find_first_not_of("0123456789") == string::npos;
+}
+
+bool isOperator(const string& s) {
+    return s.find_first_not_of("+-/*%^=") == string::npos;
 }
 
 vector<TACObject> constantFolding(vector<TACObject> TACContainer) {
@@ -134,6 +140,36 @@ vector<TACObject> constantFolding(vector<TACObject> TACContainer) {
     return TACContainer;
 }
 
+vector<TACObject> deadCodeElimination(vector<TACObject> TACContainer) {
+    vector<pair<int,string>> variables;
+    vector<string> used_tokens;
+
+    // collect all tokens both rhs and lhs
+    for (int j = 0; j < TACContainer.size(); ++j) {
+        TACObject &taco = TACContainer[j];
+        if (taco.type == stmt) {
+            split(taco.rhs, " ", used_tokens, false); // false here means update the used_tokens, instead of reseting it
+            variables.emplace_back(j, taco.lhs);
+        } else if (taco.type == branch) { // for bramch, lhs may contain variables used in the code
+            split(taco.lhs, " ", used_tokens, false);
+        }
+    }
+
+    // Cleans up token that is not a variable (integer and operators)
+    for (int i = 0; i < used_tokens.size(); ++i)
+        if (isNumeric(used_tokens[i]) || isOperator(used_tokens[i]))
+            used_tokens.erase(used_tokens.begin() + i-- );
+
+    set<string> rhs_unique(used_tokens.begin(), used_tokens.end());
+
+    // remove varible that does not appear in rhs_token
+    for (auto var : variables)
+        if (rhs_unique.find(var.second) == rhs_unique.end())
+            TACContainer.erase(TACContainer.begin() + var.first);
+
+    return TACContainer;
+}
+
 string Program::Emit() {
     if ( decls->NumElements() > 0 ) {
         for ( int i = 0; i < decls->NumElements(); ++i ) {
@@ -142,9 +178,9 @@ string Program::Emit() {
         }
     }
 
-    vector<TACObject> optimized_TACContainer = constantFolding(TACContainer);
-    //vector<TACObject> optimized_TACContainer = constantPropagation(TACContainer);
-    //vector<TACObject> optimized_TACContainer = deadCodeElimination(TACContainer);
+//    vector<TACObject> optimized_TACContainer = constantFolding(TACContainer);
+//    vector<TACObject> optimized_TACContainer = constantPropagation(TACContainer);
+    vector<TACObject> optimized_TACContainer = deadCodeElimination(TACContainer);
 
     for (int i = 0; i < optimized_TACContainer.size(); ++i) {
         switch(optimized_TACContainer[i].type) {
