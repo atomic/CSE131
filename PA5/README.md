@@ -1,6 +1,7 @@
 
 # Class Hierarchy and Headers
 
+```
 Decl (ast_decl.h)
     FnDecl (ast_decl.h)
         FormalsError (ast_decl.h)
@@ -38,3 +39,4 @@ Stmt (ast_stmt.h)
     StmtBlock (ast_stmt.h)
 Type (ast_type.h)
     NamedType (ast_type.h)
+```
