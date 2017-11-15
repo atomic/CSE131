@@ -1,0 +1,10 @@
+used: a_used, d_used, e_used, 
+main:
+    BeginFunc 24
+    a_used := 1
+    d_used := 0
+    e_used := 0
+    a_used := a_used + 1
+    t1 := d_used + e_used
+    Return t1
+    EndFunc 
