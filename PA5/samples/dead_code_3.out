@@ -1,0 +1,15 @@
+main:
+    BeginFunc 16
+    a := 1
+    t1 := a < 2
+    if t1 goto L0
+    goto L1
+L0:
+    a := a + 1
+    goto L2
+L1:
+    t2 := a * 3
+    a := t2
+    goto L2
+L2:
+    EndFunc 

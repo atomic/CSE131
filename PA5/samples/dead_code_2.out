@@ -1,0 +1,6 @@
+main:
+    BeginFunc 12
+    a := 1
+    t1 := a + 1
+    a := t1
+    EndFunc 
