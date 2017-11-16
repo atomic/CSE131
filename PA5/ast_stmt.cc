@@ -7,6 +7,9 @@
 #include "ast_decl.h"
 #include "ast_expr.h"
 #include <cctype>
+#include <unordered_map>
+#include <sstream>
+#include <iterator>
 
 Program::Program(List<Decl*> *d) {
     Assert(d != NULL);
@@ -180,12 +183,46 @@ void deadCodeElimination(vector<TACObject>& TACContainer) {
         TACContainer.erase(TACContainer.begin() + item);
 }
 
+
 /**
  * turn X = 5; X = X + 3  -->  X = 5 + 3
  * @param TACContainer
  * @return
  */
-vector<TACObject> constantPropagation(vector<TACObject> TACContainer) {
+void constantPropagation(vector<TACObject>& TACContainer) {
+
+    unordered_map<string, string> value_map;
+    // collect all tokens both rhs and lhs
+    vector<string> rhs_tokens;
+    for (auto &taco : TACContainer) {
+        if (taco.type == stmt) {
+            if (isNumeric(taco.rhs)) {
+                if (value_map.find(taco.lhs) != value_map.end())    // re-assignment, stop
+                    break;
+                value_map[taco.lhs] = taco.rhs;                     // save initialized values
+            }
+            else { // do replacement
+                split(taco.rhs, " ", rhs_tokens);
+                bool changed = false;
+                for (auto &token : rhs_tokens) {
+                    if (value_map.find(token) != value_map.end() ) {
+                        token = value_map[token];
+                        changed = true;
+                    }
+                }
+                if (changed) {
+                    stringstream imploded;
+                    copy(rhs_tokens.begin(), rhs_tokens.end(), ostream_iterator<string>(imploded, " "));
+                    taco.rhs = imploded.str();
+                    taco.rhs.pop_back();  // remove last space from the join operation
+                }
+            }
+        }
+    }
+
+//    for (auto pair : value_map)
+//        cout << pair.first << "," << pair.second << endl;
+
 }
 
 string Program::Emit() {
@@ -197,8 +234,8 @@ string Program::Emit() {
     }
 
 //    constantFolding(TACContainer);
-//      constantPropagation(TACContainer);
-    deadCodeElimination(TACContainer);
+      constantPropagation(TACContainer);
+//    deadCodeElimination(TACContainer);
 
     for (int i = 0; i < TACContainer.size(); ++i) {
         switch(TACContainer[i].type) {
