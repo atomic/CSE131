@@ -105,14 +105,18 @@ bool isOperator(const string& s) {
     return s.find_first_not_of("+-/*%^=") == string::npos;
 }
 
-vector<TACObject> constantFolding(vector<TACObject> TACContainer) {
+/**
+ * evaluate arithmetic expressions in code
+ * @param TACContainer
+ * @return
+ */
+void constantFolding(vector<TACObject>& TACContainer) {
     vector<string> split_result;
 
     for (int i = 0; i < TACContainer.size(); ++i) {
-
         if (TACContainer[i].type != stmt)
             continue;
-    
+
         split(TACContainer[i].rhs, " ", split_result);
         
         if (split_result.size() != 3)
@@ -136,11 +140,14 @@ vector<TACObject> constantFolding(vector<TACObject> TACContainer) {
             }
         }
     }
-
-    return TACContainer;
 }
 
-vector<TACObject> deadCodeElimination(vector<TACObject> TACContainer) {
+/**
+ * remove unused initalized variables from code
+ * @param TACContainer
+ * @return
+ */
+void deadCodeElimination(vector<TACObject>& TACContainer) {
     vector<pair<int,string>> variables;
     vector<string> used_tokens;
 
@@ -162,23 +169,23 @@ vector<TACObject> deadCodeElimination(vector<TACObject> TACContainer) {
             used_tokens.erase(used_tokens.begin() + i-- );
 
     set<string> rhs_unique(used_tokens.begin(), used_tokens.end());
-//    cout << "used: ";
-//    for (auto used : rhs_unique)
-//        cout << used << ", ";
-//    cout << endl;
 
 
     // remove varible that does not appear in rhs_token (add index to remove first)
     vector<int> index_to_delete;
-    for (auto var : variables) {
-        if (rhs_unique.find(var.second) == rhs_unique.end()) {
-//            cout << " will delete : " << var.second << " at pos " << var.first << endl;
+    for (auto var : variables)
+        if (rhs_unique.find(var.second) == rhs_unique.end())
             index_to_delete.insert(index_to_delete.begin(), var.first);
-        }
-    }
     for (auto item : index_to_delete)
         TACContainer.erase(TACContainer.begin() + item);
-    return TACContainer;
+}
+
+/**
+ * turn X = 5; X = X + 3  -->  X = 5 + 3
+ * @param TACContainer
+ * @return
+ */
+vector<TACObject> constantPropagation(vector<TACObject> TACContainer) {
 }
 
 string Program::Emit() {
@@ -189,33 +196,33 @@ string Program::Emit() {
         }
     }
 
-//    vector<TACObject> optimized_TACContainer = constantFolding(TACContainer);
-//    vector<TACObject> optimized_TACContainer = constantPropagation(TACContainer);
-    vector<TACObject> optimized_TACContainer = deadCodeElimination(TACContainer);
+//    constantFolding(TACContainer);
+//      constantPropagation(TACContainer);
+    deadCodeElimination(TACContainer);
 
-    for (int i = 0; i < optimized_TACContainer.size(); ++i) {
-        switch(optimized_TACContainer[i].type) {
-            case label:  cout << optimized_TACContainer[i].lhs + ":" 
+    for (int i = 0; i < TACContainer.size(); ++i) {
+        switch(TACContainer[i].type) {
+            case label:  cout << TACContainer[i].lhs + ":"
                          << endl; 
                          break;
 
-            case stmt:   cout << "    " + optimized_TACContainer[i].lhs
-                         << " := " << optimized_TACContainer[i].rhs << endl; 
+            case stmt:   cout << "    " + TACContainer[i].lhs
+                         << " := " << TACContainer[i].rhs << endl;
                          break;
 
-            case instr:  cout << "    " + optimized_TACContainer[i].lhs
-                         << " " + optimized_TACContainer[i].rhs << endl; 
+            case instr:  cout << "    " + TACContainer[i].lhs
+                         << " " + TACContainer[i].rhs << endl;
                          break;
 
-            case call:   cout << "    " + optimized_TACContainer[i].lhs
-                         << " call " + optimized_TACContainer[i].rhs << endl; 
+            case call:   cout << "    " + TACContainer[i].lhs
+                         << " call " + TACContainer[i].rhs << endl;
                          break;
 
-            case branch: cout << "    if " + optimized_TACContainer[i].lhs 
-                         << " goto " + optimized_TACContainer[i].rhs << endl; 
+            case branch: cout << "    if " + TACContainer[i].lhs
+                         << " goto " + TACContainer[i].rhs << endl;
                          break;
 
-            case jump:   cout << "    goto " + optimized_TACContainer[i].lhs 
+            case jump:   cout << "    goto " + TACContainer[i].lhs
                          << endl; 
                          break;
 
