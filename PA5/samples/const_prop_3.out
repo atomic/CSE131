@@ -1,0 +1,13 @@
+main:
+    BeginFunc 12
+    if true goto L0
+    goto L1
+L0:
+    x := 8
+    goto L2
+L1:
+    y := 9
+    goto L2
+L2:
+    z := 8
+    EndFunc 

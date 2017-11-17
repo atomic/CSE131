@@ -1,0 +1,15 @@
+main:
+    BeginFunc 20
+    x := 8
+    if true goto L0
+    goto L1
+L0:
+    t1 := 8 + 1
+    y := t1
+    goto L2
+L1:
+    t2 := 8 + 1
+    y := t2
+    goto L2
+L2:
+    EndFunc 
