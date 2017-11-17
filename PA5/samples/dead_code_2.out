@@ -1,6 +1,7 @@
 main:
     BeginFunc 12
-    a := 1
-    t1 := a + 1
-    a := t1
+    x := 8
+    a := 2
+    t1 := a + x
+    Return t1
     EndFunc 

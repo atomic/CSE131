@@ -1,3 +1,5 @@
 main:
-    BeginFunc 4
+    BeginFunc 8
+    a := 2
+    Return a
     EndFunc 

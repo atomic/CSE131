@@ -1,7 +1,8 @@
 main:
-    BeginFunc 16
+    BeginFunc 20
+    x := 8
     a := 1
-    t1 := a < 2
+    t1 := x == 8
     if t1 goto L0
     goto L1
 L0:
