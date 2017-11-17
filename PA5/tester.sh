@@ -39,6 +39,14 @@ function compare_all() {
     rm -rf ${OUTFILES}
 }
 
+function compare_pattern() {
+    for file in $(ls samples/$1*.java); do
+        filename=$(echo $file | cut -f1 -d '.' | cut -f2 -d '/')
+        printf "\n\n COMPARING  ${filename}:\n"
+        compare_diff ${filename}
+    done
+}
+
 function compare_diff() {
     if [[ $(which colordiff) =~ "not found" ]]; then
         diff -yW"`tput cols`" <(./parser < samples/$1.java) <(cat samples/$1.out)
@@ -57,6 +65,7 @@ while true; do
     case "$1" in
         --all  ) compare_all; break ;;
         --alld ) compare_all $1; break ;;
+        -p    ) compare_pattern $2; break ;;
         -d    ) compare_diff $2; break ;;
         -r    ) rebuild; break ;;
         *     ) usage ;;
