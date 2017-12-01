@@ -225,6 +225,44 @@ void constantPropagation(vector<TACObject>& TACContainer) {
 
 }
 
+void generateMIPS(vector<TACObject>& TACContainer) {
+    unordered_map<string, string> registerMap;
+
+    for (auto &taco : TACContainer) {
+        switch(taco.type) {
+            case label:  cout << taco.lhs + ":" << endl;
+                         break;
+//
+//            case stmt:  if (taco.lhs[0] != 't') 
+//                            registerMap.insert( {taco.lhs, taco.rhs});
+//
+//            case instr:  cout << "    " + taco.lhs
+//                         << " " + taco.rhs << endl;
+//                         break;
+//
+//            case call:
+            case print:  cout << "  li $v0, 1" << endl;
+                         cout << "  move $a0, " + registerMap[taco.rhs] << endl;
+                         cout << "  syscall" << endl;
+
+//            case branch: cout << "    if " + taco.lhs
+//                         << " goto " + taco.rhs << endl;
+//                         break;
+//
+//            case jump:   cout << "    goto " + taco.lhs
+//                         << endl; 
+//                         break;
+//
+//            default:     cout << " ERRRORRR !!!! " << endl;
+        }
+    }
+
+    // End of Program
+    cout << "  li $v0, 10" << endl;
+    cout << "  syscall" << endl;
+
+}
+
 string Program::Emit() {
     if ( decls->NumElements() > 0 ) {
         for ( int i = 0; i < decls->NumElements(); ++i ) {
@@ -237,36 +275,38 @@ string Program::Emit() {
     //constantPropagation(TACContainer);
     //deadCodeElimination(TACContainer);
 
-    for (int i = 0; i < TACContainer.size(); ++i) {
-        switch(TACContainer[i].type) {
-            case label:  cout << TACContainer[i].lhs + ":"
-                         << endl; 
-                         break;
+//    for (int i = 0; i < TACContainer.size(); ++i) {
+//        switch(TACContainer[i].type) {
+//            case label:  cout << TACContainer[i].lhs + ":"
+//                         << endl; 
+//                         break;
+//
+//            case stmt:   cout << "    " + TACContainer[i].lhs
+//                         << " := " << TACContainer[i].rhs << endl;
+//                         break;
+//
+//            case instr:  cout << "    " + TACContainer[i].lhs
+//                         << " " + TACContainer[i].rhs << endl;
+//                         break;
+//
+//            case print:
+//            case call:   cout << "    " + TACContainer[i].lhs
+//                         << " call " + TACContainer[i].rhs << endl;
+//                         break;
+//
+//            case branch: cout << "    if " + TACContainer[i].lhs
+//                         << " goto " + TACContainer[i].rhs << endl;
+//                         break;
+//
+//            case jump:   cout << "    goto " + TACContainer[i].lhs
+//                         << endl; 
+//                         break;
+//
+//            default:     cout << " ERRRORRR !!!! " << endl;
+//        }
+//    }
 
-            case stmt:   cout << "    " + TACContainer[i].lhs
-                         << " := " << TACContainer[i].rhs << endl;
-                         break;
-
-            case instr:  cout << "    " + TACContainer[i].lhs
-                         << " " + TACContainer[i].rhs << endl;
-                         break;
-
-            case call:   cout << "    " + TACContainer[i].lhs
-                         << " call " + TACContainer[i].rhs << endl;
-                         break;
-
-            case branch: cout << "    if " + TACContainer[i].lhs
-                         << " goto " + TACContainer[i].rhs << endl;
-                         break;
-
-            case jump:   cout << "    goto " + TACContainer[i].lhs
-                         << endl; 
-                         break;
-
-            default:     cout << " ERRRORRR !!!! " << endl;
-        }
-    }
-
+    generateMIPS(TACContainer);
     return "Program::Emit()";
 }
 
