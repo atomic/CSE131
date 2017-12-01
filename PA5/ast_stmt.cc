@@ -353,11 +353,14 @@ void generateMIPS(vector<TACObject>& TACContainer) {
     unordered_map<string, string> regMap;
     vector<string> rhs_tokens;
 
-//    cout << "(DEBUG MODE) print all" << endl;
     for (auto &taco : TACContainer) {
+
+        /** DEBUG **/
         printTAC(taco);
+        cout << "(regMap content): " << endl;
         for (auto pair : regMap)
             cout << "---(dbg) " << pair.first << ":" << pair.second << endl;
+        /** END DEBUG **/
 
         switch(taco.type) {
             case label:  cout << taco.lhs + ":" << endl;
