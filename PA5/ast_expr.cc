@@ -3,11 +3,12 @@
  * Implementation of expression node classes.
  */
 
-#include <string.h>
+#include <cstring>
 #include "ast_expr.h"
 #include "ast_type.h"
 #include "ast_decl.h"
 #include "symtable.h"
+#include <map>
 
 
 IntConstant::IntConstant(yyltype loc, int val) : Expr(loc) {
@@ -113,29 +114,40 @@ string Operator::Emit() {
 
 string Call::Emit() {
     bool print_func = false;
-    bool stdin_func = false; 
+    bool stdin_func = false;
 
-    if (strcmp(field->GetName(), "readIntFromSTDIN") == 0)
+    sccode code     = sc_None;               // certain function call may trigger system call
+    string field_name(field->GetName());    //  cleaner code
+    map<string,sccode> sc_str_code {
+            {"readIntFromSTDIN", sc_ReadInt},
+            {"printInt", sc_PrintInt}
+    };
+
+    if (strstr(field_name.c_str(), "read")) {
         stdin_func = true;
+        code       = sc_str_code[field_name];
+    }
 
-    if (strcmp(field->GetName(), "printInt") == 0)
+    if (strstr(field_name.c_str(), "print")) {
         print_func = true;
+        code       = sc_str_code[field_name];
+    }
 
     for (int i = 0; i < actuals->NumElements(); ++i) {
         string argName = actuals->Nth(i)->Emit();
         if (!print_func && !stdin_func) 
-            TACContainer.emplace_back("PushParam", argName, 0, instr);
+            TACContainer.emplace_back("PushParam", argName, 0, instr, code);
     }
 
     string registerStr = "";
 
     if (print_func) {
-        TACContainer.emplace_back("Print", actuals->Nth(0)->Emit(), 0, print); 
+        TACContainer.emplace_back("Print", actuals->Nth(0)->Emit(), 0, print, code);
     } else {
         registerStr = "t" + to_string(tempRegister);
         tempRegister++; stackRegister++;
         string rhs = string(field->GetName()) + " " + to_string(actuals->NumElements());
-        TACContainer.emplace_back(registerStr, rhs, 0, call);
+        TACContainer.emplace_back(registerStr, rhs, 0, call, code);
     }
 
     if (!print_func && !stdin_func)
