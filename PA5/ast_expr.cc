@@ -8,7 +8,6 @@
 #include "ast_type.h"
 #include "ast_decl.h"
 #include "symtable.h"
-#include <map>
 
 
 IntConstant::IntConstant(yyltype loc, int val) : Expr(loc) {
@@ -116,12 +115,13 @@ string Call::Emit() {
     bool print_func = false;
     bool stdin_func = false;
 
-    sccode code     = sc_None;               // certain function call may trigger system call
-    string field_name(field->GetName());    //  cleaner code
     map<string,sccode> sc_str_code {
             {"readIntFromSTDIN", sc_ReadInt},
             {"printInt", sc_PrintInt}
     };
+
+    sccode code     = sc_None;               // certain function call may trigger system call
+    string field_name(field->GetName());    //  cleaner code
 
     if (strstr(field_name.c_str(), "read")) {
         stdin_func = true;

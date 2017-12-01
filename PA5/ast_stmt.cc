@@ -338,16 +338,31 @@ void generateIR(const vector<TACObject>& TACContainer) {
     }
 }
 
+void printTAC(const TACObject& taco) {
+    map<tactype ,string> tactype_map {
+            {label, "Label"}, {instr, "instr"}, {stmt, "stmt"},
+            {call, "call"}, {print, "print"}, {branch, "branch"}, {jump, "jump"}, };
+
+    cout << "(" <<  tactype_map[taco.type] << ")"
+        << ", lhs : " << taco.lhs
+        << ", rhs : " << taco.rhs
+        << ", bytes: " << taco.bytes << endl;
+}
+
 void generateMIPS(vector<TACObject>& TACContainer) {
     unordered_map<string, string> regMap;
     vector<string> rhs_tokens;
 
+//    cout << "(DEBUG MODE) print all" << endl;
     for (auto &taco : TACContainer) {
+        printTAC(taco);
+        for (auto pair : regMap)
+            cout << "---(dbg) " << pair.first << ":" << pair.second << endl;
+
         switch(taco.type) {
             case label:  cout << taco.lhs + ":" << endl;
                          break;
-
-            case stmt:  
+            case stmt:
                 split(taco.rhs, " ", rhs_tokens);
 
                 // Case 1) Variable is assigned a register.
@@ -431,7 +446,7 @@ string Program::Emit() {
     //constantPropagation(TACContainer);
     //deadCodeElimination(TACContainer);
 
-    //generateIR(TACContainer);
+//    generateIR(TACContainer);
     generateMIPS(TACContainer);
     return "Program::Emit()";
 }

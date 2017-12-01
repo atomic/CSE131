@@ -38,6 +38,7 @@
 #include "location.h"
 #include <vector>
 #include <set>
+#include <map>
 
 using namespace std;
 class SymbolTable;
