@@ -234,6 +234,7 @@ void constantPropagation(vector<TACObject>& TACContainer) {
  */
 void linearScan(unordered_map<string, string>& map, vector<TACObject>& container) {
     vector<string> rhs_tokens;
+
     for (auto &taco : container) {
         if (taco.type != stmt)
             continue; 
@@ -253,7 +254,7 @@ void linearScan(unordered_map<string, string>& map, vector<TACObject>& container
             } else {
                 auto reg = "t" + to_string(Node::tempRegister);
                 Node::tempRegister++; Node::stackRegister;
-                map[taco.lhs] = taco.rhs;
+                map[taco.lhs] = reg;
             }
         }
     }
@@ -395,10 +396,10 @@ void generateMIPS(vector<TACObject>& TACContainer) {
     for (auto &taco : TACContainer) {
 
         /** DEBUG **/
-        printTAC(taco);
-        cout << "(regMap content): " << endl;
-        for (auto pair : regMap)
-            cout << "---(dbg) " << pair.first << ":" << pair.second << endl;
+        //printTAC(taco);
+        //cout << "(regMap content): " << endl;
+        //for (auto pair : regMap)
+        //    cout << "---(dbg) " << pair.first << ":" << pair.second << endl;
         /** END DEBUG **/
 
         switch(taco.type) {
@@ -430,7 +431,7 @@ void generateMIPS(vector<TACObject>& TACContainer) {
                     if (regMap.find(rhs_tokens[2]) != regMap.end())
                         b = regMap[rhs_tokens[2]];
 
-                    auto code = binaryExprToMIPS(taco.lhs, a, b, rhs_tokens[1]);
+                    auto code = binaryExprToMIPS(regMap[taco.lhs], a, b, rhs_tokens[1]);
 
                     cout << code << endl;
                 }
