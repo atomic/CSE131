@@ -1,6 +1,7 @@
 .data
 
      text:  .asciiz "Enter a number: "
+     output: .asciiz "Sum output: "
 
 .text
 
@@ -10,26 +11,38 @@
     la $a0, text
     syscall
 
-    # Getting user input
+    # Getting user input to register $t1
     li $v0, 5
     syscall
+    move $t1, $v0
 
-    # $s0 == sum, $s1 == N, $t0 == i
-    move $s0, $zero
-    move $s1, $v0         # save user input to $s1 (N)
-    li $t0, 1             # i = 0
- loop:
+    # Sum starts with 0
+    li $t3, 0
 
-    beq $t0, $s1, done    # check (if i == N)
+    # Iteartion i = t4
+    li $t4, 1
 
-    add $s0, $s0, $t0     # sum = sum + 1
-    addi $t0, $t0, 1      # i++
-    b loop
- done:
-    li $v0, 1              # Printing out the sum
-    move $a0, $s0
+# Condition Check
+L0:
+    slt $t5, $t1, $t4
+    not $t5, $t5
+    andi $t5, $t5, 1
+    bne $t5, $zero, L1
+    j L2
+# Loop Body
+L1:
+    add $t3, $t3, $t4
+    addi $t4, $t4, 1
+    j L0
+# End
+L2:
+    # Printing output of the sum
+    li $v0, 4
+    la $a0, output
     syscall
 
-    # End Program
+    li $v0, 1
+    move $a0, $t3
+    syscall
     li $v0, 10
     syscall
