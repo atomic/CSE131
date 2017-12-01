@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <sstream>
 #include <iterator>
+#include <iomanip>
 
 Program::Program(List<Decl*> *d) {
     Assert(d != NULL);
@@ -385,10 +386,10 @@ void printTAC(const TACObject& taco) {
             {label, "Label"}, {instr, "instr"}, {stmt, "stmt"},
             {call, "call"}, {print, "print"}, {branch, "branch"}, {jump, "jump"}, };
 
-    cout << "(" <<  tactype_map[taco.type] << ")"
-        << ", lhs : " << taco.lhs
-        << ", rhs : " << taco.rhs
-        << ", bytes: " << taco.bytes << endl;
+    cout << "(" <<  tactype_map[taco.type] << ")" << setw(15)
+        << "\tlhs :  " << taco.lhs << setw(8)
+        << "\trhs :  " << taco.rhs << setw(8)
+        << "\tbytes: " << taco.bytes << setw(8) << endl;
 }
 
 void generateMIPS(vector<TACObject>& TACContainer) {
@@ -402,10 +403,9 @@ void generateMIPS(vector<TACObject>& TACContainer) {
     Color::Modifier c_green(Color::Code::FG_GREEN);
     Color::Modifier c_blue(Color::Code::FG_BLUE);
     Color::Modifier c_def(Color::Code::FG_DEFAULT);
-
     cout << c_blue << "(regMap content): " << endl;
     for (auto pair : regMap)
-        cout << "---(dbg) " << pair.first << ":" << pair.second << endl;
+        cout << "---(dbg) " << setw(7) << pair.first << ":" << setw(7) << pair.second << endl;
     cout << c_def << endl;
     /** END DEBUG **/
 
