@@ -225,36 +225,90 @@ void constantPropagation(vector<TACObject>& TACContainer) {
 
 }
 
-string assignRegister(unordered_map<string, string> map, string key) {
-    if (map.find(key) != map.end()) {
-        return map[key];
+string varConstToMIPS(string rs, string constant) {
+    string reg = rs;
+
+    if (rs[0] != 't') {
+        reg = "t" + to_string(Node::tempRegister);
+        Node::tempRegister++; Node::stackRegister;
     }
 
-    auto registerStr = "t" + Node::tempRegister;
-    Node::tempRegister++; Node::stackRegister;
-    return registerStr;
+    cout << "  li $" + reg + ", " + constant << endl;
+    return reg;
 }
 
-void convertToMIPS(string rd, string rs, string rt, string op) {
-    if (op.compare("<") == 0) {
-        cout << "  slt $" + rd + ", $" + rs + ", $" + rt << endl;
-    } else if (op.compare(">") == 0) {
-        cout << "  slt $" + rd + ", $" + rt + ", $" + rs << endl;
-    } else if (op.compare("<=") == 0) {
-        cout << "  slt $" + rd + ", $" + rt + ", $" + rs << endl;
-        cout << "  not $" + rd + ", $" + rd << endl;
-        cout << "  andi $" + rd + ", $" + rd + ", 1" << endl;
-    } else if (op.compare("=>") == 0) {
-        cout << "  slt $" + rd + ", $" + rs + ", $" + rt << endl;
-        cout << "  not $" + rd + ", $" + rd << endl;
-        cout << "  andi $" + rd + ", $" + rd + ", 1" << endl;
-    } else if (op.compare("+") == 0) {
-        cout << "  add $" + rd + ", $" + rs + ", $" + rt << endl;
-    } else if (op.compare("-") == 0) {
-        cout << "  add $" + rd + ", $" + rs + ", $" + rt << endl;
-    } else {
-        cout << "" << endl;
+string binaryExprToMIPS(string c, string a, string b, string op) {
+    if (op == ">")
+        return binaryExprToMIPS(c, b, a, "<");
+    if (op == ">=")
+        return binaryExprToMIPS(c, b, a, "<=");
+
+
+    string mipsCode = "";
+    string instruction = "";
+    string rs = "$" + a;
+    string rt = "$" + b; 
+    string rd = "$" + c;
+
+    // Assume parameter 'b' not a constant. Use R-Type instruction.
+    bool iType = false;
+
+    // How to translate 100 < $t0 to MIPS? First use li to store 100 into
+    // register $rs, then use slt $rd, $rs, $rt
+    if (isNumeric(a) && (op == "<" || op == "<=")) {
+        rs  = "$t" + to_string(Node::tempRegister);
+        Node::tempRegister++; Node::stackRegister;
+
+        mipsCode += "  li " + rs + ", " + a + "\n";
     }
+
+    // How to translate a := 4 + a to MIPS? Change positions to a := a + 4, and
+    // use addi.
+    if (isNumeric(a) && (op != "<" && op != "<=")) {
+        iType = true;
+        rt = a;
+        rs = "$" + b;
+    }
+
+    // How to translate $t0 < 140 to MIPS? Use I-type instruction.
+    if (isNumeric(b)) {
+        iType = true;
+        rt = b;
+    }
+
+    if (op == "<") {
+        instruction = "  slt";
+        instruction += (iType) ? "i" : "";
+
+        mipsCode += instruction + " " + rd + ", " + rs + ", " + rt;
+        return mipsCode;
+    } 
+    if (op == "<=") {
+
+        mipsCode += binaryExprToMIPS(c, a, b, ">") + "\n";
+        mipsCode += "  not "  + rd + ", " + rd + "\n";
+        mipsCode += "  andi " + rd + ", " + rd + ", 1";
+        return mipsCode;
+    }
+//    } else if (op.compare("=>") == 0) {
+//        cout << "  slt $" + rd + ", $" + rs + ", $" + rt << endl;
+//        cout << "  not $" + rd + ", $" + rd << endl;
+//        cout << "  andi $" + rd + ", $" + rd + ", 1" << endl;
+    if (op == "+") {
+        instruction = "  add";
+        instruction += (iType) ? "i" : "";
+
+        mipsCode += instruction + " " + rd + ", " + rs + ", " + rt;
+        return mipsCode;
+    } 
+//    if (op == "-") {
+//        cout << "  add $" + rd + ", $" + rs + ", $" + rt << endl;
+//    }
+//    else {
+//        cout << "" << endl;
+//    }
+
+    return "";
 }
 
 void generateIR(const vector<TACObject>& TACContainer) {
@@ -285,7 +339,7 @@ void generateIR(const vector<TACObject>& TACContainer) {
 }
 
 void generateMIPS(vector<TACObject>& TACContainer) {
-    unordered_map<string, string> registerMap;
+    unordered_map<string, string> regMap;
     vector<string> rhs_tokens;
 
     for (auto &taco : TACContainer) {
@@ -294,16 +348,35 @@ void generateMIPS(vector<TACObject>& TACContainer) {
                          break;
 
             case stmt:  
-                        split(taco.rhs, " ", rhs_tokens);
-                        if (rhs_tokens.size() == 1 && rhs_tokens[0][0] == 't') {
-                            registerMap.insert( {taco.lhs, taco.rhs} );
-                        } else {
-                            auto rs = assignRegister(registerMap, rhs_tokens[0]);
-                            auto rt = assignRegister(registerMap, rhs_tokens[2]);
-                            auto op = rhs_tokens[1];
-                            convertToMIPS(taco.lhs, rs, rt, op);
-                        }
-                        break;
+                split(taco.rhs, " ", rhs_tokens);
+
+                // Case 1) Variable is assigned a register.
+                // Examples:  a := t1, b := t4, c := t0
+                if (rhs_tokens.size() == 1 && rhs_tokens[0][0] == 't') {
+                    regMap.insert( {taco.lhs, taco.rhs} );
+                } 
+                // Case 2) Variable is assigned a constant.
+                // Examples:  a := 2, b := 4, c := 8
+                else if (rhs_tokens.size() == 1) {
+                    regMap[taco.lhs] = varConstToMIPS(taco.lhs, taco.rhs);
+                } 
+                // Case 3) Variable is assigned to a binary expression.
+                // Examples:  a := t3 + t1, b := t6 + t0
+                else {
+                    string a = rhs_tokens[0];
+                    string b = rhs_tokens[2];
+
+                    if (regMap.find(rhs_tokens[0]) != regMap.end())
+                        a = regMap[rhs_tokens[0]];
+                    if (regMap.find(rhs_tokens[2]) != regMap.end())
+                        b = regMap[rhs_tokens[2]];
+
+                    auto code = binaryExprToMIPS(taco.lhs, a, b, rhs_tokens[1]);
+
+                    cout << code << endl;
+                }
+
+                break;
 
 //            case instr:  cout << "(DEBUG) sc_code : " << taco.sc_code << endl;
             case instr:  // cout << "    " + taco.lhs
@@ -323,7 +396,7 @@ void generateMIPS(vector<TACObject>& TACContainer) {
                     case sc_None:break;
                 }
             case print:  cout << "  li $v0, 1\n"
-                              << "  move $a0, " + registerMap[taco.rhs] << "\n"
+                              << "  move $a0, $" + regMap[taco.rhs] << "\n"
                               << "  syscall" 
                          << endl;
                          break;
@@ -352,11 +425,11 @@ string Program::Emit() {
         }
     }
 
-    //constantFolding(TACContainer);
+    constantFolding(TACContainer);
     //constantPropagation(TACContainer);
     //deadCodeElimination(TACContainer);
 
-//    generateIR(TACContainer);
+    //generateIR(TACContainer);
     generateMIPS(TACContainer);
     return "Program::Emit()";
 }
