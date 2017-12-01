@@ -43,15 +43,23 @@ using namespace std;
 class SymbolTable;
 
 enum tactype { label, instr, stmt, call, print, branch, jump };
+enum sccode { sc_PrintInt, sc_PrintFloat, sc_PrintDouble,
+              sc_ReadInt , sc_ReadFloat , sc_ReadDouble , sc_None };
 
 struct TACObject{
     string lhs;    // lhs of the TAC
     string rhs;    // rhs of the TAC
     int bytes;     // # of bytes for this TAC
     tactype type;
+    sccode sc_code;
 
-    TACObject(string lhs, string rhs, int b, tactype type) : 
-    lhs(lhs), rhs(rhs), bytes(b), type(type) { }
+    TACObject(string lhs, string rhs, int b, tactype type, sccode sc_code = sc_None ) :
+    lhs(lhs),
+    rhs(rhs),
+    bytes(b),
+    type(type),
+    sc_code(sc_code) {
+    }
 };
 
 class Node  {
