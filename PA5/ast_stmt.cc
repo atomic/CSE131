@@ -246,6 +246,11 @@ void linearScan(unordered_map<string, string>& map, vector<TACObject>& container
             if (map.find(taco.lhs) != map.end())
                 continue;
 
+            if (taco.lhs[0] == 't') {
+                map[taco.lhs] = taco.lhs;
+                continue;
+            }
+
             auto reg = "t" + to_string(Node::tempRegister);
             Node::tempRegister++; Node::stackRegister;
             map[taco.lhs] = reg;
