@@ -1,0 +1,17 @@
+main:
+    BeginFunc 16
+    t1 call readIntFromSTDIN 0
+    a := t1
+    t2 call readIntFromSTDIN 0
+    b := t2
+    t3 := a > b
+    if t3 goto L0
+    goto L1
+L0:
+    Print call a
+    goto L2
+L1:
+    Print call b
+    goto L2
+L2:
+    EndFunc 
