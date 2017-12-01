@@ -238,6 +238,27 @@ string varConstToMIPS(string rs, string constant) {
 }
 
 string binaryExprToMIPS(string c, string a, string b, string op) {
+    /*
+     * The parameters are ordered based on the binary expression.
+     * c := a op b 
+     *
+     *
+     * The local variables rd, rs, rt follows the MIPS green sheet format.
+     * For R-type instructions:
+     *    rd - the destination register
+     *    rs - a source register
+     *    rt - a source register
+     * The format for R-type usually looks like the following:
+     *   (R-type instruction) $rd, $rs, $rt
+     *
+     * For I-type instructions:
+     *   rt - the destination register
+     *   rs - a source register
+     *   imm - some immediate value
+     * The formart for I-type usually looks like the following:
+     *   (I-type instruction) $rt, $rs, imm
+     */
+
     if (op == ">")
         return binaryExprToMIPS(c, b, a, "<");
     if (op == ">=")
@@ -245,10 +266,11 @@ string binaryExprToMIPS(string c, string a, string b, string op) {
 
 
     string mipsCode = "";
-    string instruction = "";
+    string instr = "";
     string rs = "$" + a;
     string rt = "$" + b; 
     string rd = "$" + c;
+    string imm;
 
     // Assume parameter 'b' not a constant. Use R-Type instruction.
     bool iType = false;
@@ -290,10 +312,6 @@ string binaryExprToMIPS(string c, string a, string b, string op) {
         mipsCode += "  andi " + rd + ", " + rd + ", 1";
         return mipsCode;
     }
-//    } else if (op.compare("=>") == 0) {
-//        cout << "  slt $" + rd + ", $" + rs + ", $" + rt << endl;
-//        cout << "  not $" + rd + ", $" + rd << endl;
-//        cout << "  andi $" + rd + ", $" + rd + ", 1" << endl;
     if (op == "+") {
         instruction = "  add";
         instruction += (iType) ? "i" : "";
@@ -301,12 +319,6 @@ string binaryExprToMIPS(string c, string a, string b, string op) {
         mipsCode += instruction + " " + rd + ", " + rs + ", " + rt;
         return mipsCode;
     } 
-//    if (op == "-") {
-//        cout << "  add $" + rd + ", $" + rs + ", $" + rt << endl;
-//    }
-//    else {
-//        cout << "" << endl;
-//    }
 
     return "";
 }
@@ -353,7 +365,7 @@ void generateMIPS(vector<TACObject>& TACContainer) {
                 // Case 1) Variable is assigned a register.
                 // Examples:  a := t1, b := t4, c := t0
                 if (rhs_tokens.size() == 1 && rhs_tokens[0][0] == 't') {
-                    regMap.insert( {taco.lhs, taco.rhs} );
+                    regMap[taco.lhs] = taco.rhs;
                 } 
                 // Case 2) Variable is assigned a constant.
                 // Examples:  a := 2, b := 4, c := 8
