@@ -247,6 +247,33 @@ void convertToMIPS(string rd, string rs, string rt, string op) {
     }
 }
 
+void generateIR(const vector<TACObject>& TACContainer) {
+    for (int i = 0; i < TACContainer.size(); ++i) {
+        switch(TACContainer[i].type) {
+            case label:  cout << TACContainer[i].lhs + ":" << endl;
+                break;
+
+            case stmt:   cout << "    " + TACContainer[i].lhs << " := " << TACContainer[i].rhs << endl;
+                break;
+
+            case instr:  cout << "    " + TACContainer[i].lhs << " " + TACContainer[i].rhs << endl;
+                break;
+
+            case print:
+            case call:   cout << "    " + TACContainer[i].lhs << " call " + TACContainer[i].rhs << endl;
+                break;
+
+            case branch: cout << "    if " + TACContainer[i].lhs << " goto " + TACContainer[i].rhs << endl;
+                break;
+
+            case jump:   cout << "    goto " + TACContainer[i].lhs << endl;
+                break;
+
+            default:     cout << " ERRRORRR !!!! " << endl;
+        }
+    }
+}
+
 void generateMIPS(vector<TACObject>& TACContainer) {
     unordered_map<string, string> registerMap;
     vector<string> rhs_tokens;
@@ -267,12 +294,23 @@ void generateMIPS(vector<TACObject>& TACContainer) {
                             convertToMIPS(taco.lhs, rs, rt, op);
                         }
                         break;
-//
-//            case instr:  cout << "    " + taco.lhs
-//                         << " " + taco.rhs << endl;
-//                         break;
-//
-//            case call:
+
+//            case instr:  cout << "(DEBUG) sc_code : " << taco.sc_code << endl;
+            case instr:  // cout << "    " + taco.lhs
+                         // << " " + taco.rhs << endl;
+                         break;
+
+            case call:
+                switch (taco.sc_code) {
+                    case sc_ReadInt:
+                        cout << "  li $v0, 5" << endl
+                             << "  syscall"   << endl;
+                        break;
+                    default:
+                        cout << "  (CALL ERROR) taco.sc_code: " << taco.sc_code << endl;
+                        break;
+                    case sc_None:break;
+                }
             case print:  cout << "  li $v0, 1\n"
                               << "  move $a0, " + registerMap[taco.rhs] << "\n"
                               << "  syscall" 
@@ -286,41 +324,13 @@ void generateMIPS(vector<TACObject>& TACContainer) {
             case jump:   cout << "  j " + taco.lhs << endl; 
                          break;
 
-            default:     cout << " ERRRORRR !!!! " << endl;
+            default:     cout << "(TACO Type Error) type: " << taco.type << endl;
         }
     }
 
     // End of Program
     cout << "  li $v0, 10" << endl;
     cout << "  syscall" << endl;
-
-}
-
-void generateIR(const vector<TACObject>& TACContainer) {
-    for (int i = 0; i < TACContainer.size(); ++i) {
-        switch(TACContainer[i].type) {
-            case label:  cout << TACContainer[i].lhs + ":" << endl;
-                         break;
-
-            case stmt:   cout << "    " + TACContainer[i].lhs << " := " << TACContainer[i].rhs << endl;
-                         break;
-
-            case instr:  cout << "    " + TACContainer[i].lhs << " " + TACContainer[i].rhs << endl;
-                         break;
-
-            case print:
-            case call:   cout << "    " + TACContainer[i].lhs << " call " + TACContainer[i].rhs << endl;
-                         break;
-
-            case branch: cout << "    if " + TACContainer[i].lhs << " goto " + TACContainer[i].rhs << endl;
-                         break;
-
-            case jump:   cout << "    goto " + TACContainer[i].lhs << endl;
-                         break;
-
-            default:     cout << " ERRRORRR !!!! " << endl;
-        }
-    }
 }
 
 string Program::Emit() {
