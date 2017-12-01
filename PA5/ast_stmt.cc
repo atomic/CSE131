@@ -387,10 +387,10 @@ void printTAC(const TACObject& taco) {
             {label, "Label"}, {instr, "instr"}, {stmt, "stmt"},
             {call, "call"}, {print, "print"}, {branch, "branch"}, {jump, "jump"}, };
 
-    cout << "(" <<  tactype_map[taco.type] << ")" << setw(15)
-        << "\tlhs :  " << taco.lhs << setw(8)
-        << "\trhs :  " << taco.rhs << setw(8)
-        << "\tbytes: " << taco.bytes << setw(8) << endl;
+    cout << setw(20) << "(" <<  tactype_map[taco.type] << ")"
+        << "\tlhs :  " << setw(5) << taco.lhs << setw(8)
+        << "\trhs :  " << setw(5) << taco.rhs << setw(8)
+        << "\tbytes: " << setw(5) << taco.bytes << endl;
 }
 
 void generateMIPS(vector<TACObject>& TACContainer) {
