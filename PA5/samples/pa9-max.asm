@@ -48,7 +48,7 @@
     syscall
     j exit
 
- exit:
+ L2:
     # End Program
     li $v0, 10
     syscall

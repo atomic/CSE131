@@ -225,16 +225,39 @@ void constantPropagation(vector<TACObject>& TACContainer) {
 
 }
 
+void convertToMIPS(string rd, string rs, string rt, const char op) {
+    switch(op) {
+        case '<':
+            cout << "  slt " + rd + ", " + rs + ", " + rt << endl;
+            break;
+        case '>':
+            cout << "  slt " + rd + ", " + rt + ", " + rs << endl;
+            break;
+        default:
+            cout << "" << endl;
+    }
+}
+
 void generateMIPS(vector<TACObject>& TACContainer) {
     unordered_map<string, string> registerMap;
+    vector<string> rhs_tokens;
 
     for (auto &taco : TACContainer) {
         switch(taco.type) {
             case label:  cout << taco.lhs + ":" << endl;
                          break;
 //
-//            case stmt:  if (taco.lhs[0] != 't') 
-//                            registerMap.insert( {taco.lhs, taco.rhs});
+            case stmt:  
+                        split(taco.rhs, " ", rhs_tokens);
+                        if (rhs_tokens.size() == 1) {
+                            registerMap.insert( {taco.lhs, taco.rhs} );
+                        } else {
+                            auto rs = registerMap[rhs_tokens[0]];
+                            auto rt = registerMap[rhs_tokens[2]];
+                            char op = rhs_tokens[1][0];
+                            convertToMIPS(taco.lhs, rs, rt, op);
+                        }
+                        break;
 //
 //            case instr:  cout << "    " + taco.lhs
 //                         << " " + taco.rhs << endl;
@@ -244,14 +267,14 @@ void generateMIPS(vector<TACObject>& TACContainer) {
             case print:  cout << "  li $v0, 1" << endl;
                          cout << "  move $a0, " + registerMap[taco.rhs] << endl;
                          cout << "  syscall" << endl;
+                         break;
 
 //            case branch: cout << "    if " + taco.lhs
 //                         << " goto " + taco.rhs << endl;
 //                         break;
 //
-//            case jump:   cout << "    goto " + taco.lhs
-//                         << endl; 
-//                         break;
+            case jump:   cout << "  j " + taco.lhs << endl; 
+                         break;
 //
 //            default:     cout << " ERRRORRR !!!! " << endl;
         }
@@ -349,7 +372,6 @@ string WhileStmt::Emit() {
     body->Emit();
     TACContainer.emplace_back(label0, "", 0, jump);
     TACContainer.emplace_back(label2, "", 0, label);
-
     return "WhileStmt::Emit()";
 }
 
