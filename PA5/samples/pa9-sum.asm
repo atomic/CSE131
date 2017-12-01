@@ -19,7 +19,9 @@
     move $s1, $v0         # save user input to $s1 (N)
     li $t0, 1             # i = 0
  loop:
+
     beq $t0, $s1, done    # check (if i == N)
+
     add $s0, $s0, $t0     # sum = sum + 1
     addi $t0, $t0, 1      # i++
     b loop

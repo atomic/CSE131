@@ -375,6 +375,17 @@ void generateIR(const vector<TACObject>& TACContainer) {
     }
 }
 
+void printTAC(const TACObject& taco) {
+    map<tactype ,string> tactype_map {
+            {label, "Label"}, {instr, "instr"}, {stmt, "stmt"},
+            {call, "call"}, {print, "print"}, {branch, "branch"}, {jump, "jump"}, };
+
+    cout << "(" <<  tactype_map[taco.type] << ")"
+        << ", lhs : " << taco.lhs
+        << ", rhs : " << taco.rhs
+        << ", bytes: " << taco.bytes << endl;
+}
+
 void generateMIPS(vector<TACObject>& TACContainer) {
     unordered_map<string, string> regMap;
     vector<string> rhs_tokens;
@@ -382,11 +393,18 @@ void generateMIPS(vector<TACObject>& TACContainer) {
     linearScan(regMap, TACContainer);
 
     for (auto &taco : TACContainer) {
+
+        /** DEBUG **/
+        printTAC(taco);
+        cout << "(regMap content): " << endl;
+        for (auto pair : regMap)
+            cout << "---(dbg) " << pair.first << ":" << pair.second << endl;
+        /** END DEBUG **/
+
         switch(taco.type) {
             case label:  cout << taco.lhs + ":" << endl;
                          break;
-
-            case stmt:  
+            case stmt:
                 split(taco.rhs, " ", rhs_tokens);
 
                 // Case 1) Variable is assigned a register.
@@ -429,7 +447,7 @@ void generateMIPS(vector<TACObject>& TACContainer) {
                     case sc_ReadInt:
                         cout << "  li $v0, 5"       << endl
                              << "  syscall"         << endl
-                             << "  move $t0, $v0" << endl; // hard code?
+                             << "  move $" << taco.lhs << ", $v0" << endl;
                         break;
                     default:
                         cout << "  (CALL ERROR) taco.sc_code: " << taco.sc_code << endl;
@@ -472,7 +490,7 @@ string Program::Emit() {
     //constantPropagation(TACContainer);
     //deadCodeElimination(TACContainer);
 
-    //generateIR(TACContainer);
+//    generateIR(TACContainer);
     generateMIPS(TACContainer);
     return "Program::Emit()";
 }
