@@ -225,17 +225,40 @@ void constantPropagation(vector<TACObject>& TACContainer) {
 
 }
 
-string varConstToMIPS(string rs, string constant) {
-    string reg = rs;
+/**
+ * Function assigns a temporary register to each variable found within the TAC
+ * container.
+ *
+ * @param
+ * @return 
+ */
+void linearScan(unordered_map<string, string>& map, vector<TACObject>& container) {
+    vector<string> rhs_tokens;
+    for (auto &taco : container) {
+        if (taco.type != stmt)
+            continue; 
 
-    if (rs[0] != 't') {
-        reg = "t" + to_string(Node::tempRegister);
-        Node::tempRegister++; Node::stackRegister;
+        split(taco.rhs, " ", rhs_tokens);
+
+        if (rhs_tokens.size() != 1) {
+            if (map.find(taco.lhs) != map.end())
+                continue;
+
+            auto reg = "t" + to_string(Node::tempRegister);
+            Node::tempRegister++; Node::stackRegister;
+            map[taco.lhs] = reg;
+        } else {
+            if (taco.rhs[0] == 't') {
+                map[taco.lhs] = taco.rhs;
+            } else {
+                auto reg = "t" + to_string(Node::tempRegister);
+                Node::tempRegister++; Node::stackRegister;
+                map[taco.lhs] = taco.rhs;
+            }
+        }
     }
-
-    cout << "  li $" + reg + ", " + constant << endl;
-    return reg;
 }
+
 
 string binaryExprToMIPS(string c, string a, string b, string op) {
     /*
@@ -257,6 +280,9 @@ string binaryExprToMIPS(string c, string a, string b, string op) {
      *   imm - some immediate value
      * The formart for I-type usually looks like the following:
      *   (I-type instruction) $rt, $rs, imm
+     *
+     * NOTE: for I-type instructions I simply re-use the 'rt' as my immediate 
+     * value
      */
 
     if (op == ">")
@@ -270,7 +296,6 @@ string binaryExprToMIPS(string c, string a, string b, string op) {
     string rs = "$" + a;
     string rt = "$" + b; 
     string rd = "$" + c;
-    string imm;
 
     // Assume parameter 'b' not a constant. Use R-Type instruction.
     bool iType = false;
@@ -299,10 +324,10 @@ string binaryExprToMIPS(string c, string a, string b, string op) {
     }
 
     if (op == "<") {
-        instruction = "  slt";
-        instruction += (iType) ? "i" : "";
+        instr = "  slt";
+        instr += (iType) ? "i" : "";
 
-        mipsCode += instruction + " " + rd + ", " + rs + ", " + rt;
+        mipsCode += instr + " " + rd + ", " + rs + ", " + rt;
         return mipsCode;
     } 
     if (op == "<=") {
@@ -313,14 +338,14 @@ string binaryExprToMIPS(string c, string a, string b, string op) {
         return mipsCode;
     }
     if (op == "+") {
-        instruction = "  add";
-        instruction += (iType) ? "i" : "";
+        instr = "  add";
+        instr += (iType) ? "i" : "";
 
-        mipsCode += instruction + " " + rd + ", " + rs + ", " + rt;
+        mipsCode += instr + " " + rd + ", " + rs + ", " + rt;
         return mipsCode;
     } 
 
-    return "";
+    return "ERROR operator (" + op + ") not supported!";
 }
 
 void generateIR(const vector<TACObject>& TACContainer) {
@@ -354,6 +379,8 @@ void generateMIPS(vector<TACObject>& TACContainer) {
     unordered_map<string, string> regMap;
     vector<string> rhs_tokens;
 
+    linearScan(regMap, TACContainer);
+
     for (auto &taco : TACContainer) {
         switch(taco.type) {
             case label:  cout << taco.lhs + ":" << endl;
@@ -370,7 +397,9 @@ void generateMIPS(vector<TACObject>& TACContainer) {
                 // Case 2) Variable is assigned a constant.
                 // Examples:  a := 2, b := 4, c := 8
                 else if (rhs_tokens.size() == 1) {
-                    regMap[taco.lhs] = varConstToMIPS(taco.lhs, taco.rhs);
+                   // varConstToMIPS(regMap[taco.lhs], taco.rhs);
+                    cout << "  li $" + regMap[taco.lhs] + ", " + taco.rhs 
+                         << endl;
                 } 
                 // Case 3) Variable is assigned to a binary expression.
                 // Examples:  a := t3 + t1, b := t6 + t0
@@ -400,7 +429,7 @@ void generateMIPS(vector<TACObject>& TACContainer) {
                     case sc_ReadInt:
                         cout << "  li $v0, 5"       << endl
                              << "  syscall"         << endl
-                             << "  move $t0, $v0"   << endl; // hard code?
+                             << "  move $t0, $v0" << endl; // hard code?
                         break;
                     default:
                         cout << "  (CALL ERROR) taco.sc_code: " << taco.sc_code << endl;
