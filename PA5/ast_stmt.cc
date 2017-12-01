@@ -225,16 +225,25 @@ void constantPropagation(vector<TACObject>& TACContainer) {
 
 }
 
-void convertToMIPS(string rd, string rs, string rt, const char op) {
-    switch(op) {
-        case '<':
-            cout << "  slt " + rd + ", " + rs + ", " + rt << endl;
-            break;
-        case '>':
-            cout << "  slt " + rd + ", " + rt + ", " + rs << endl;
-            break;
-        default:
-            cout << "" << endl;
+void convertToMIPS(string rd, string rs, string rt, string op) {
+    if (op.compare("<") == 0) {
+        cout << "  slt $" + rd + ", $" + rs + ", $" + rt << endl;
+    } else if (op.compare(">") == 0) {
+        cout << "  slt $" + rd + ", $" + rt + ", $" + rs << endl;
+    } else if (op.compare("<=") == 0) {
+        cout << "  slt $" + rd + ", $" + rt + ", $" + rs << endl;
+        cout << "  not $" + rd + ", $" + rd << endl;
+        cout << "  andi $" + rd + ", $" + rd + ", 1" << endl;
+    } else if (op.compare("=>") == 0) {
+        cout << "  slt $" + rd + ", $" + rs + ", $" + rt << endl;
+        cout << "  not $" + rd + ", $" + rd << endl;
+        cout << "  andi $" + rd + ", $" + rd + ", 1" << endl;
+    } else if (op.compare("+") == 0) {
+        cout << "  add $" + rd + ", $" + rs + ", $" + rt << endl;
+    } else if (op.compare("-") == 0) {
+        cout << "  add $" + rd + ", $" + rs + ", $" + rt << endl;
+    } else {
+        cout << "" << endl;
     }
 }
 
@@ -246,7 +255,7 @@ void generateMIPS(vector<TACObject>& TACContainer) {
         switch(taco.type) {
             case label:  cout << taco.lhs + ":" << endl;
                          break;
-//
+
             case stmt:  
                         split(taco.rhs, " ", rhs_tokens);
                         if (rhs_tokens.size() == 1) {
@@ -254,7 +263,7 @@ void generateMIPS(vector<TACObject>& TACContainer) {
                         } else {
                             auto rs = registerMap[rhs_tokens[0]];
                             auto rt = registerMap[rhs_tokens[2]];
-                            char op = rhs_tokens[1][0];
+                            auto op = rhs_tokens[1];
                             convertToMIPS(taco.lhs, rs, rt, op);
                         }
                         break;
@@ -264,19 +273,20 @@ void generateMIPS(vector<TACObject>& TACContainer) {
 //                         break;
 //
 //            case call:
-            case print:  cout << "  li $v0, 1" << endl;
-                         cout << "  move $a0, " + registerMap[taco.rhs] << endl;
-                         cout << "  syscall" << endl;
+            case print:  cout << "  li $v0, 1\n"
+                              << "  move $a0, " + registerMap[taco.rhs] << "\n"
+                              << "  syscall" 
+                         << endl;
                          break;
 
-//            case branch: cout << "    if " + taco.lhs
-//                         << " goto " + taco.rhs << endl;
-//                         break;
-//
+            case branch: cout << "  bne $" + taco.lhs + ", $zero, " + taco.rhs 
+                         << endl;
+                         break;
+
             case jump:   cout << "  j " + taco.lhs << endl; 
                          break;
-//
-//            default:     cout << " ERRRORRR !!!! " << endl;
+
+            //default:     cout << " ERRRORRR !!!! " << endl;
         }
     }
 
