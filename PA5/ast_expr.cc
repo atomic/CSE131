@@ -130,7 +130,7 @@ string Call::Emit() {
     string registerStr = "";
 
     if (print_func) {
-        TACContainer.emplace_back("Print", actuals->Nth(0)->Emit(), 0, instr); 
+        TACContainer.emplace_back("Print", actuals->Nth(0)->Emit(), 0, print); 
     } else {
         registerStr = "t" + to_string(tempRegister);
         tempRegister++; stackRegister++;
