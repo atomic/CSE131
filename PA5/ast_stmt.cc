@@ -375,6 +375,11 @@ void generateIR(const vector<TACObject>& TACContainer) {
     }
 }
 
+/**
+ * Debug function to print out the detail of TACObject
+ *
+ * @param taco : the TACObject of interest
+ */
 void printTAC(const TACObject& taco) {
     map<tactype ,string> tactype_map {
             {label, "Label"}, {instr, "instr"}, {stmt, "stmt"},
@@ -392,13 +397,24 @@ void generateMIPS(vector<TACObject>& TACContainer) {
 
     linearScan(regMap, TACContainer);
 
+    /** DEBUG **/
+    Color::Modifier c_red(Color::Code::FG_RED);
+    Color::Modifier c_green(Color::Code::FG_GREEN);
+    Color::Modifier c_blue(Color::Code::FG_BLUE);
+    Color::Modifier c_def(Color::Code::FG_DEFAULT);
+
+    cout << c_blue << "(regMap content): " << endl;
+    for (auto pair : regMap)
+        cout << "---(dbg) " << pair.first << ":" << pair.second << endl;
+    cout << c_def << endl;
+    /** END DEBUG **/
+
     for (auto &taco : TACContainer) {
 
         /** DEBUG **/
+        cout << c_blue ;
         printTAC(taco);
-        cout << "(regMap content): " << endl;
-        for (auto pair : regMap)
-            cout << "---(dbg) " << pair.first << ":" << pair.second << endl;
+        cout << c_def ;
         /** END DEBUG **/
 
         switch(taco.type) {
@@ -490,7 +506,7 @@ string Program::Emit() {
     //constantPropagation(TACContainer);
     //deadCodeElimination(TACContainer);
 
-//    generateIR(TACContainer);
+    generateIR(TACContainer);
     generateMIPS(TACContainer);
     return "Program::Emit()";
 }
