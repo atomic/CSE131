@@ -225,6 +225,16 @@ void constantPropagation(vector<TACObject>& TACContainer) {
 
 }
 
+string assignRegister(unordered_map<string, string> map, string key) {
+    if (map.find(key) != map.end()) {
+        return map[key];
+    }
+
+    auto registerStr = "t" + Node::tempRegister;
+    Node::tempRegister++; Node::stackRegister;
+    return registerStr;
+}
+
 void convertToMIPS(string rd, string rs, string rt, string op) {
     if (op.compare("<") == 0) {
         cout << "  slt $" + rd + ", $" + rs + ", $" + rt << endl;

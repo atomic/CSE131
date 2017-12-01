@@ -72,12 +72,13 @@ class Node  {
 
     // Declare any global variables you need here
     // And initialize them in ast.cc
-    static int stackRegister;
-    static int tempRegister;
     static int labelCounter;
     static vector<TACObject> TACContainer;
 
   public:
+    static int tempRegister;
+    static int stackRegister;
+
     Node(yyltype loc);
     Node();
     virtual ~Node() {}
