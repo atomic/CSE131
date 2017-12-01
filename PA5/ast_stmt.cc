@@ -286,7 +286,7 @@ void generateMIPS(vector<TACObject>& TACContainer) {
             case jump:   cout << "  j " + taco.lhs << endl; 
                          break;
 
-            //default:     cout << " ERRRORRR !!!! " << endl;
+            default:     cout << " ERRRORRR !!!! " << endl;
         }
     }
 
@@ -294,6 +294,33 @@ void generateMIPS(vector<TACObject>& TACContainer) {
     cout << "  li $v0, 10" << endl;
     cout << "  syscall" << endl;
 
+}
+
+void generateIR(const vector<TACObject>& TACContainer) {
+    for (int i = 0; i < TACContainer.size(); ++i) {
+        switch(TACContainer[i].type) {
+            case label:  cout << TACContainer[i].lhs + ":" << endl;
+                         break;
+
+            case stmt:   cout << "    " + TACContainer[i].lhs << " := " << TACContainer[i].rhs << endl;
+                         break;
+
+            case instr:  cout << "    " + TACContainer[i].lhs << " " + TACContainer[i].rhs << endl;
+                         break;
+
+            case print:
+            case call:   cout << "    " + TACContainer[i].lhs << " call " + TACContainer[i].rhs << endl;
+                         break;
+
+            case branch: cout << "    if " + TACContainer[i].lhs << " goto " + TACContainer[i].rhs << endl;
+                         break;
+
+            case jump:   cout << "    goto " + TACContainer[i].lhs << endl;
+                         break;
+
+            default:     cout << " ERRRORRR !!!! " << endl;
+        }
+    }
 }
 
 string Program::Emit() {
@@ -308,37 +335,7 @@ string Program::Emit() {
     //constantPropagation(TACContainer);
     //deadCodeElimination(TACContainer);
 
-//    for (int i = 0; i < TACContainer.size(); ++i) {
-//        switch(TACContainer[i].type) {
-//            case label:  cout << TACContainer[i].lhs + ":"
-//                         << endl; 
-//                         break;
-//
-//            case stmt:   cout << "    " + TACContainer[i].lhs
-//                         << " := " << TACContainer[i].rhs << endl;
-//                         break;
-//
-//            case instr:  cout << "    " + TACContainer[i].lhs
-//                         << " " + TACContainer[i].rhs << endl;
-//                         break;
-//
-//            case print:
-//            case call:   cout << "    " + TACContainer[i].lhs
-//                         << " call " + TACContainer[i].rhs << endl;
-//                         break;
-//
-//            case branch: cout << "    if " + TACContainer[i].lhs
-//                         << " goto " + TACContainer[i].rhs << endl;
-//                         break;
-//
-//            case jump:   cout << "    goto " + TACContainer[i].lhs
-//                         << endl; 
-//                         break;
-//
-//            default:     cout << " ERRRORRR !!!! " << endl;
-//        }
-//    }
-
+//    generateIR(TACContainer);
     generateMIPS(TACContainer);
     return "Program::Emit()";
 }
