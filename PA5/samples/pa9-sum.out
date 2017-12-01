@@ -1,17 +1,5 @@
 main:
-    BeginFunc 16
-    t1 call readIntFromSTDIN 0
-    a := t1
-    sum := 0
-    i := 1
-L0:
-    t2 := i <= a
-    if t2 goto L1
-    goto L2
-L1:
-    sum := sum + i
-    i := i + 1
-    goto L0
-L2:
-    Print sum
-    EndFunc 
+  li $v0, 5
+  syscall
+  move $t0, $v0
+
