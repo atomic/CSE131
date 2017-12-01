@@ -43,8 +43,10 @@ using namespace std;
 class SymbolTable;
 
 enum tactype { label, instr, stmt, call, print, branch, jump };
-enum sccode { sc_PrintInt, sc_PrintFloat, sc_PrintDouble,
-              sc_ReadInt , sc_ReadFloat , sc_ReadDouble , sc_None };
+enum sccode { sc_None,
+    sc_PrintInt, sc_ReadInt,
+    sc_MemAlloc  // for BeginFunc ? not sure
+};
 
 struct TACObject{
     string lhs;    // lhs of the TAC
