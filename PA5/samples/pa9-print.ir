@@ -1,0 +1,6 @@
+main:
+    BeginFunc 8
+    t1 call readIntFromSTDIN 0
+    a := t1
+    Print call a
+    EndFunc 
