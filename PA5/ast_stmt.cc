@@ -247,6 +247,9 @@ void convertToMIPS(string rd, string rs, string rt, string op) {
     }
 }
 
+
+
+
 void generateMIPS(vector<TACObject>& TACContainer) {
     unordered_map<string, string> registerMap;
     vector<string> rhs_tokens;
@@ -258,11 +261,11 @@ void generateMIPS(vector<TACObject>& TACContainer) {
 
             case stmt:  
                         split(taco.rhs, " ", rhs_tokens);
-                        if (rhs_tokens.size() == 1) {
+                        if (rhs_tokens.size() == 1 && rhs_tokens[0][0] == 't') {
                             registerMap.insert( {taco.lhs, taco.rhs} );
                         } else {
-                            auto rs = registerMap[rhs_tokens[0]];
-                            auto rt = registerMap[rhs_tokens[2]];
+                            auto rs = assignRegister(registerMap, rhs_tokens[0]);
+                            auto rt = assignRegister(registerMap, rhs_tokens[2]);
                             auto op = rhs_tokens[1];
                             convertToMIPS(taco.lhs, rs, rt, op);
                         }
