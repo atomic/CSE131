@@ -405,9 +405,11 @@ void generateMIPS(vector<TACObject>& TACContainer) {
                     default:
                         cout << "  (CALL ERROR) taco.sc_code: " << taco.sc_code << endl;
                         break;
-                    case sc_None:break;
+                    case sc_None:
+                        break;
                 }
-            case print:  cout << "  li $v0, 1\n"
+                break;
+            case print: cout << "  li $v0, 1\n"
                               << "  move $a0, $" + regMap[taco.rhs] << "\n"
                               << "  syscall" 
                          << endl;
