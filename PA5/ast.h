@@ -39,6 +39,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include "colormod.h"
 
 using namespace std;
 class SymbolTable;
