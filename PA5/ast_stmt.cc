@@ -233,9 +233,9 @@ string Program::Emit() {
         }
     }
 
-//    constantFolding(TACContainer);
-      constantPropagation(TACContainer);
-//    deadCodeElimination(TACContainer);
+    //constantFolding(TACContainer);
+    //constantPropagation(TACContainer);
+    //deadCodeElimination(TACContainer);
 
     for (int i = 0; i < TACContainer.size(); ++i) {
         switch(TACContainer[i].type) {
