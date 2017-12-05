@@ -1,0 +1,16 @@
+BeginFunc 12
+x = 5
+y = 3
+PushParam x
+PushParam y
+z = call sum 2
+PopParams 8
+printInz z
+EndFunc 12
+sum:
+LoadParam a
+LoadParam b
+BeginFunc 4
+c = a + b
+Return c
+EndFunc 4
