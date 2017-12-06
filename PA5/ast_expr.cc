@@ -135,8 +135,11 @@ string Call::Emit() {
 
     for (int i = 0; i < actuals->NumElements(); ++i) {
         string argName = actuals->Nth(i)->Emit();
-        if (!print_func && !stdin_func) 
+        if (!print_func && !stdin_func) {
+            if (i == 0)
+                TACContainer.emplace_back("SaveRegisters", "", 0, instr, code);
             TACContainer.emplace_back("PushParam", argName, 0, instr, code);
+        }
     }
 
     string registerStr = "";
@@ -150,8 +153,10 @@ string Call::Emit() {
         TACContainer.emplace_back(registerStr, rhs, 0, call, code);
     }
 
-    if (!print_func && !stdin_func)
+    if (!print_func && !stdin_func) {
         TACContainer.emplace_back("PopParam", to_string(actuals->NumElements() * 4), 0, instr);
+        TACContainer.emplace_back("RestoreRegisters", "", 0, instr, code);
+    }
 
     return registerStr;
 }

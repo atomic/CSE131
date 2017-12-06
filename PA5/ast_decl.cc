@@ -53,7 +53,7 @@ string FnDecl::Emit() {
     TACContainer.emplace_back(id->GetName(), "", 0, label);
     for(int i = 0; i < formals->NumElements(); ++i)
         TACContainer.emplace_back("LoadParam", formals->Nth(i)->GetIdentifier()->GetName(), 0, instr);
-    stackRegister += formals->NumElements();
+    //stackRegister += formals->NumElements();
 
     TACContainer.emplace_back("BeginFunc", "?", 0, instr, sc_MemAlloc);
     size_t begin_pos = TACContainer.size() - 1;
