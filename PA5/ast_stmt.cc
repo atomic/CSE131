@@ -241,6 +241,7 @@ void constantPropagation(vector<TACObject>& TACContainer) {
 void linearScan(map<string, Trump>& regMap, vector<TACObject>& container) {
     vector<string> rhs_tokens;
     string curr_context;
+    unordered_map<string, int> registerCount;
 
     for (auto &taco : container) {
         if (taco.type == label && taco.lhs[0] != 'L') {
@@ -262,15 +263,15 @@ void linearScan(map<string, Trump>& regMap, vector<TACObject>& container) {
                 continue;
             }
 
-            auto reg = "t" + to_string(Node::tempRegister);
-            Node::tempRegister++; Node::stackRegister++;
+            auto reg = "t" + to_string(Node::tempRegister[curr_context]);
+            Node::tempRegister[curr_context]++; Node::stackRegister++;
             regMap[taco.lhs] = make_pair(reg, curr_context);
         } else {
             if (taco.rhs[0] == 't') {
                 regMap[taco.lhs] = make_pair(taco.rhs, curr_context);
             } else {
-                auto reg = "t" + to_string(Node::tempRegister);
-                Node::tempRegister++; Node::stackRegister++;
+                auto reg = "t" + to_string(Node::tempRegister[curr_context]);
+                Node::tempRegister[curr_context]++; Node::stackRegister++;
                 regMap[taco.lhs] = make_pair(reg, curr_context);
             }
         }
@@ -315,14 +316,16 @@ string binaryExprToMIPS(string c, string a, string b, string op) {
     string rt = "$" + b; 
     string rd = "$" + c;
 
+    const string &context = Node::current_context;
+
     // Assume parameter 'b' not a constant. Use R-Type instruction.
     bool iType = false;
 
     // How to translate 100 < $t0 to MIPS? First use li to store 100 into
     // register $rs, then use slt $rd, $rs, $rt
     if (isNumeric(a) && (op == "<" || op == "<=")) {
-        rs  = "$t" + to_string(Node::tempRegister);
-        Node::tempRegister++; Node::stackRegister;
+        rs  = "$t" + to_string(Node::tempRegister[context]);
+        Node::tempRegister[context]++; Node::stackRegister;
 
         mipsCode += "  li " + rs + ", " + a + "\n";
     }
@@ -422,7 +425,7 @@ void generateMIPS(vector<TACObject>& TACContainer) {
     map<string, pair<string, string>> regMap;
 
     vector<string> rhs_tokens;
-    bool is_main = false;
+    //bool is_main = false;
 
     string stack_size = "";
     int pushparam_taken = 0;
@@ -452,7 +455,8 @@ void generateMIPS(vector<TACObject>& TACContainer) {
 
         switch(taco.type) {
             case label:  cout << taco.lhs + ":" << endl;
-                         if (taco.lhs == "main") is_main = true;
+                         if (taco.lhs[0] != 'L') 
+                             Node::current_context = taco.lhs;
                          break;
             case stmt:
                 split(taco.rhs, " ", rhs_tokens);
@@ -493,7 +497,7 @@ void generateMIPS(vector<TACObject>& TACContainer) {
                     cout << "  addi $sp, $sp, -" + taco.rhs << endl;
                     stack_size = taco.rhs;
                 } else if (taco.lhs == "Return") {
-                    cout << "  move $v0, $" + taco.rhs << endl;
+                    cout << "  move $v0, $" + regMap[taco.rhs].first << endl;
                     registerNum = 0;
                 } else if (taco.lhs == "LoadParam") {
                     cout << "  lw $t" + to_string(registerNum)
@@ -506,7 +510,7 @@ void generateMIPS(vector<TACObject>& TACContainer) {
                     pushparam_taken++;
                 } else if (taco.lhs == "EndFunc") {
                     cout << "  addi $sp, $sp, " + stack_size << endl;
-                    if (!is_main) 
+                    if (Node::current_context != "main")
                         cout << "  jr $ra" << endl;
                 } else if (taco.lhs == "SaveRegisters") {
                     int count = 0;
@@ -583,8 +587,8 @@ string Program::Emit() {
     //constantPropagation(TACContainer);
     //deadCodeElimination(TACContainer);
 
-    generateIR(TACContainer);
-    //generateMIPS(TACContainer);
+    //generateIR(TACContainer);
+    generateMIPS(TACContainer);
     return "Program::Emit()";
 }
 

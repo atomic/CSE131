@@ -78,7 +78,8 @@ class Node  {
     static vector<TACObject> TACContainer;
 
   public:
-    static int tempRegister;
+    static map<string, int> tempRegister;
+    static string current_context;
     static int stackRegister;
 
     Node(yyltype loc);

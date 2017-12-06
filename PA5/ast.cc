@@ -24,7 +24,10 @@ Node::Node() {
 
 SymbolTable *Node::symtab = new SymbolTable();
 
-int Node::tempRegister = 1; // start with 1 for convenience assigning name for registers
+// start with 1 for convenience assigning name for registers
+map<string, int> Node::tempRegister = { {"main", 1} };
+
+string Node::current_context = "";
 int Node::stackRegister = 0;
 int Node::labelCounter = 0;
 vector<TACObject> Node::TACContainer = {};

@@ -1,12 +1,15 @@
-int sum(int a, int b) {
-    return a + b;
+int sum(int a, int b, int c, int d, int e) {
+    return a + b + c + d + e;
 }
 
 void main() {
+    int v = readIntFromSTDIN();
+    int x = readIntFromSTDIN();
+    int w = readIntFromSTDIN();
+    int y = readIntFromSTDIN();
+    int z = readIntFromSTDIN();
 
-    int x = 5;
-    int y = 3;
-    y = sum(x,y);
+    int total = sum(v, x, w, y, z);
 
-    printInt(y);
+    printInt(total);
 }

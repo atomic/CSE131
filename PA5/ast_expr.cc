@@ -147,8 +147,8 @@ string Call::Emit() {
     if (print_func) {
         TACContainer.emplace_back("Print", actuals->Nth(0)->Emit(), 0, print, code);
     } else {
-        registerStr = "t" + to_string(tempRegister);
-        tempRegister++; stackRegister++;
+        registerStr = "t" + to_string(tempRegister[current_context]);
+        tempRegister[current_context]++; stackRegister++;
         string rhs = string(field->GetName()) + " " + to_string(actuals->NumElements());
         TACContainer.emplace_back(registerStr, rhs, 0, call, code);
     }
@@ -177,8 +177,8 @@ string ArithmeticExpr::Emit() {
     string rightStr = right->Emit();
     string opString = op->Emit();
 
-    string registerStr = "t" + to_string(tempRegister);
-    tempRegister++; stackRegister++;
+    string registerStr = "t" + to_string(tempRegister[current_context]);
+    tempRegister[current_context]++; stackRegister++;
     string assignTo = leftStr + string(" ") + opString + string(" ") + rightStr;
     TACContainer.emplace_back (registerStr, assignTo, 4, stmt);
 
@@ -190,8 +190,8 @@ string RelationalExpr::Emit() {
     string rightStr = right->Emit();
     string opString = op->Emit();
 
-    string registerStr = "t" + to_string(tempRegister);
-    tempRegister++; stackRegister++;
+    string registerStr = "t" + to_string(tempRegister[current_context]);
+    tempRegister[current_context]++; stackRegister++;
     string assignTo = leftStr + string(" ") + opString + string(" ") + rightStr;
 
     TACContainer.emplace_back(registerStr, assignTo, 4, stmt);
@@ -221,8 +221,8 @@ string EqualityExpr::Emit() {
     string rightStr = right->Emit();
     string opString = op->Emit();
 
-    string registerStr = "t" + to_string(tempRegister);
-    tempRegister++; stackRegister++;
+    string registerStr = "t" + to_string(tempRegister[current_context]);
+    tempRegister[current_context]++; stackRegister++;
     string assignTo = leftStr + string(" ") + opString + string(" ") + rightStr;
 
     TACContainer.emplace_back(registerStr, assignTo, 4, stmt);

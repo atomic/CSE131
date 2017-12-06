@@ -50,6 +50,9 @@ void FnDecl::SetFunctionBody(Stmt *b) {
 
 string FnDecl::Emit() {
     stackRegister = 0;  // beginning of function stack
+    current_context = id->GetName();
+    tempRegister[current_context] = 1;
+
     TACContainer.emplace_back(id->GetName(), "", 0, label);
     for(int i = 0; i < formals->NumElements(); ++i)
         TACContainer.emplace_back("LoadParam", formals->Nth(i)->GetIdentifier()->GetName(), 0, instr);
