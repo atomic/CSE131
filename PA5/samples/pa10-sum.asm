@@ -7,15 +7,18 @@ main:
   # save registers...
   sw $t1, 0($sp)
   sw $t0, 4($sp)
+
   addi $sp, $sp, -4
   sw $t0, 0($sp)
   addi $sp, $sp, -4
+  sw $t1, 0($sp)
+
   jal sum
   move $t2, $v0
+  addi $sp, $sp, 8
   # restore registers...
   lw $t1, 0($sp)
   lw $t0, 4($sp)
-  addi $sp, $sp, 8
   li $v0, 1
   move $a0, $t2
   syscall
@@ -23,7 +26,8 @@ main:
   # End Program
   li $v0, 10
   syscall
-  sum:
+
+sum:
   lw $t3, 0 ($sp)
   lw $t4, 4 ($sp)
   addi $sp, $sp, -4
@@ -31,6 +35,3 @@ main:
   move $v0, $t5
   addi $sp, $sp, 4
   jr $ra
-  # End program
-  li $v0, 10
-  syscall
