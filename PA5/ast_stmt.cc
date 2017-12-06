@@ -131,8 +131,10 @@ void constantFolding(vector<TACObject>& TACContainer) {
 
         bool qualified = isNumeric(split_result[0]) && isNumeric(split_result[2]);
 
+
         if (qualified) {
-            int a = stoi(split_result[0]);
+
+            int a = split_result[0] == " " ? stoi(split_result[0]) : 0;
             int b = stoi(split_result[2]);
 
             string op = split_result[1];
@@ -428,10 +430,10 @@ void generateMIPS(vector<TACObject>& TACContainer) {
     linearScan(regMap, TACContainer);
 
     /** DEBUG **/
-    Color::Modifier c_red(Color::Code::FG_RED);
-    Color::Modifier c_green(Color::Code::FG_GREEN);
-    Color::Modifier c_blue(Color::Code::FG_BLUE);
-    Color::Modifier c_def(Color::Code::FG_DEFAULT);
+//    Color::Modifier c_red(Color::Code::FG_RED);
+//    Color::Modifier c_green(Color::Code::FG_GREEN);
+//    Color::Modifier c_blue(Color::Code::FG_BLUE);
+//    Color::Modifier c_def(Color::Code::FG_DEFAULT);
 //    cout << c_blue << "(regMap content): " << endl;
 //    for (auto pair : regMap)
 //        cout << "---(dbg) " << setw(7) << pair.first << ":" << setw(7) << pair.second << endl;
@@ -566,24 +568,21 @@ void generateMIPS(vector<TACObject>& TACContainer) {
     }
 
     // End of Program
-    cout << "# End Program" << endl;
+    cout << "  # End Program" << endl;
     cout << "  li $v0, 10" << endl;
     cout << "  syscall" << endl;
 }
 
 string Program::Emit() {
-    if ( decls->NumElements() > 0 ) {
-        for ( int i = 0; i < decls->NumElements(); ++i ) {
-            Decl *d = decls->Nth(i);
-            d->Emit();
-        }
-    }
+    if ( decls->NumElements() > 0 )
+        for ( int i = 0; i < decls->NumElements(); ++i )
+            decls->Nth(i)->Emit();
 
     constantFolding(TACContainer);
     //constantPropagation(TACContainer);
     //deadCodeElimination(TACContainer);
 
-    //generateIR(TACContainer);
+//    generateIR(TACContainer);
     generateMIPS(TACContainer);
     return "Program::Emit()";
 }
