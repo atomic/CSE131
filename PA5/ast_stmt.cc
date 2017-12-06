@@ -8,9 +8,12 @@
 #include "ast_expr.h"
 #include <cctype>
 #include <unordered_map>
+#include <utility>
 #include <sstream>
 #include <iterator>
 #include <iomanip>
+
+typedef pair<string, string> Trump;
 
 Program::Program(List<Decl*> *d) {
     Assert(d != NULL);
@@ -233,34 +236,40 @@ void constantPropagation(vector<TACObject>& TACContainer) {
  * @param
  * @return 
  */
-void linearScan(unordered_map<string, string>& map, vector<TACObject>& container) {
+void linearScan(map<string, Trump>& regMap, vector<TACObject>& container) {
     vector<string> rhs_tokens;
+    string curr_context;
 
     for (auto &taco : container) {
+        if (taco.type == label && taco.lhs[0] != 'L') {
+            curr_context = taco.lhs;
+            continue;
+        }
+
         if (taco.type != stmt)
             continue; 
 
         split(taco.rhs, " ", rhs_tokens);
 
         if (rhs_tokens.size() != 1) {
-            if (map.find(taco.lhs) != map.end())
+            if (regMap.find(taco.lhs) != regMap.end())
                 continue;
 
             if (taco.lhs[0] == 't') {
-                map[taco.lhs] = taco.lhs;
+                regMap[taco.lhs] = make_pair(taco.lhs, curr_context);
                 continue;
             }
 
             auto reg = "t" + to_string(Node::tempRegister);
             Node::tempRegister++; Node::stackRegister;
-            map[taco.lhs] = reg;
+            regMap[taco.lhs] = make_pair(reg, curr_context);
         } else {
             if (taco.rhs[0] == 't') {
-                map[taco.lhs] = taco.rhs;
+                regMap[taco.lhs] = make_pair(taco.rhs, curr_context);
             } else {
                 auto reg = "t" + to_string(Node::tempRegister);
                 Node::tempRegister++; Node::stackRegister;
-                map[taco.lhs] = reg;
+                regMap[taco.lhs] = make_pair(reg, curr_context);
             }
         }
     }
@@ -398,9 +407,23 @@ void printTAC(const TACObject& taco) {
         << "\tbytes: " << setw(5) << taco.bytes << endl;
 }
 
+bool does_trump_exists(string key, map<string, Trump>& regMap) {
+    for (const auto &v : regMap) {
+        if (v.first == key)
+            return true;
+    }
+
+    return false;
+}
+
 void generateMIPS(vector<TACObject>& TACContainer) {
-    unordered_map<string, string> regMap;
+    map<string, pair<string, string>> regMap;
     vector<string> rhs_tokens;
+    bool is_main = false;
+
+    string stack_size = "";
+    int pushparam_taken = 0;
+    int registerNum = 0;
 
     linearScan(regMap, TACContainer);
 
@@ -415,6 +438,7 @@ void generateMIPS(vector<TACObject>& TACContainer) {
 //    cout << c_def << endl;
     /** END DEBUG **/
 
+    cout << "  jal main" << endl;
     for (auto &taco : TACContainer) {
 
         /** DEBUG **/
@@ -425,6 +449,7 @@ void generateMIPS(vector<TACObject>& TACContainer) {
 
         switch(taco.type) {
             case label:  cout << taco.lhs + ":" << endl;
+                         if (taco.lhs == "main") is_main = true;
                          break;
             case stmt:
                 split(taco.rhs, " ", rhs_tokens);
@@ -432,13 +457,13 @@ void generateMIPS(vector<TACObject>& TACContainer) {
                 // Case 1) Variable is assigned a register.
                 // Examples:  a := t1, b := t4, c := t0
                 if (rhs_tokens.size() == 1 && rhs_tokens[0][0] == 't') {
-                    regMap[taco.lhs] = taco.rhs;
+                    regMap[taco.lhs].first = taco.rhs;
                 } 
                 // Case 2) Variable is assigned a constant.
                 // Examples:  a := 2, b := 4, c := 8
                 else if (rhs_tokens.size() == 1) {
                    // varConstToMIPS(regMap[taco.lhs], taco.rhs);
-                    cout << "  li $" + regMap[taco.lhs] + ", " + taco.rhs 
+                    cout << "  li $" + regMap[taco.lhs].first + ", " + taco.rhs 
                          << endl;
                 } 
                 // Case 3) Variable is assigned to a binary expression.
@@ -447,12 +472,12 @@ void generateMIPS(vector<TACObject>& TACContainer) {
                     string a = rhs_tokens[0];
                     string b = rhs_tokens[2];
 
-                    if (regMap.find(rhs_tokens[0]) != regMap.end())
-                        a = regMap[rhs_tokens[0]];
-                    if (regMap.find(rhs_tokens[2]) != regMap.end())
-                        b = regMap[rhs_tokens[2]];
+                    if (does_trump_exists(rhs_tokens[0], regMap))
+                        a = regMap[rhs_tokens[0]].first;
+                    if (does_trump_exists(rhs_tokens[2], regMap))
+                        b = regMap[rhs_tokens[2]].first;
 
-                    auto code = binaryExprToMIPS(regMap[taco.lhs], a, b, rhs_tokens[1]);
+                    auto code = binaryExprToMIPS(regMap[taco.lhs].first, a, b, rhs_tokens[1]);
 
                     cout << code << endl;
                 }
@@ -460,9 +485,51 @@ void generateMIPS(vector<TACObject>& TACContainer) {
                 break;
 
 //            case instr:  cout << "(DEBUG) sc_code : " << taco.sc_code << endl;
-            case instr:  // cout << "    " + taco.lhs
-                         // << " " + taco.rhs << endl;
-                         break;
+            case instr:   
+                if (taco.lhs == "BeginFunc") {
+                    cout << "  addi $sp, $sp, -" + taco.rhs << endl;
+                    stack_size = taco.rhs;
+                } else if (taco.lhs == "Return") {
+                    cout << "  move $v0, $" + taco.rhs << endl;
+                    registerNum = 0;
+                } else if (taco.lhs == "LoadParam") {
+                    cout << "  lw $t" + to_string(registerNum)
+                         << ", " << to_string(registerNum * 4) << "($sp)" 
+                         << endl;
+                    regMap[taco.rhs] = make_pair("t" + to_string(registerNum++), "");
+                } else if (taco.lhs == "PushParam") {
+                    cout << "  addi $sp, $sp, -4" << endl;
+                    cout << "  sw $" + regMap[taco.rhs].first + ", 0($sp)" << endl;
+                    pushparam_taken++;
+                } else if (taco.lhs == "EndFunc") {
+                    cout << "  addi $sp, $sp, " + stack_size << endl;
+                    if (!is_main) 
+                        cout << "  jr $ra" << endl;
+                } else if (taco.lhs == "SaveRegisters") {
+                    int count = 0;
+                    cout << "  # save registers..." << endl;
+                    for (const auto &r : regMap) {
+                        Trump trump = r.second;
+                        if (trump.second == "main") {
+                            cout << "  sw $" + trump.first + ", " + to_string(count * 4) + "($sp)" << endl;
+                            count++;
+                        }
+                    }
+
+                } else if (taco.lhs == "RestoreRegisters") {
+                    cout << "  addi $sp, $sp, " + to_string(4 * pushparam_taken) << endl;
+                    cout << "  # restore registers..." << endl;
+                    int count = 0;
+                     for (const auto &r : regMap) {
+                        Trump trump = r.second;
+                        if (trump.second == "main") {
+                            cout << "  sw $" + trump.first + ", " + to_string(count * 4) + "($sp)" << endl;
+                            count++;
+                        }
+                    }
+                }
+                break;
+                break;
 
             case call:
                 switch (taco.sc_code) {
@@ -471,15 +538,18 @@ void generateMIPS(vector<TACObject>& TACContainer) {
                              << "  syscall"         << endl
                              << "  move $" << taco.lhs << ", $v0" << endl;
                         break;
-                    default:
-                        cout << "  (CALL ERROR) taco.sc_code: " << taco.sc_code << endl;
-                        break;
                     case sc_None:
+                        split(taco.rhs, " ", rhs_tokens);
+                        cout << "  jal " + rhs_tokens[0] << endl;
+                        cout << "  move $" + taco.lhs + ", $v0" << endl;
+                        break;
+                    default:
+                        cout << "ERROR" << endl;
                         break;
                 }
                 break;
             case print: cout << "  li $v0, 1\n"
-                              << "  move $a0, $" + regMap[taco.rhs] << "\n"
+                              << "  move $a0, $" + regMap[taco.rhs].first << "\n"
                               << "  syscall" 
                          << endl;
                          break;
@@ -512,7 +582,7 @@ string Program::Emit() {
     //constantPropagation(TACContainer);
     //deadCodeElimination(TACContainer);
 
-//    generateIR(TACContainer);
+    //generateIR(TACContainer);
     generateMIPS(TACContainer);
     return "Program::Emit()";
 }
