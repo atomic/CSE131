@@ -1,3 +1,4 @@
+  jal main
 sum:
   lw $t3, 0 ($sp)
   lw $t4, 4 ($sp)
