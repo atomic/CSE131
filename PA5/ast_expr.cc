@@ -171,7 +171,11 @@ string EmptyExpr::Emit() {
 }
 
 string ArithmeticExpr::Emit() {
-    string leftStr = left->Emit();
+    string leftStr;
+    if (left == nullptr)
+        cout << "(TO-FIX) ast_expr.cc:176 , there is null pointer in left side of arithmetic expr" << endl;
+    else
+        leftStr = left->Emit();
     string rightStr = right->Emit();
     string opString = op->Emit();
 
