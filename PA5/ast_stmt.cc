@@ -566,6 +566,7 @@ void generateMIPS(vector<TACObject>& TACContainer) {
     }
 
     // End of Program
+    cout << "# End Program" << endl;
     cout << "  li $v0, 10" << endl;
     cout << "  syscall" << endl;
 }
