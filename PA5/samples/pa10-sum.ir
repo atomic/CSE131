@@ -1,16 +1,18 @@
-BeginFunc 12
-x = 5
-y = 3
-PushParam x
-PushParam y
-z = call sum 2
-PopParams 8
-printInz z
-EndFunc 12
 sum:
-LoadParam a
-LoadParam b
-BeginFunc 4
-c = a + b
-Return c
-EndFunc 4
+    LoadParam a
+    LoadParam b
+    BeginFunc 4
+    t1 := a + b
+    Return t1
+    EndFunc 
+main:
+    BeginFunc 12
+    x := 5
+    y := 3
+    PushParam x
+    PushParam y
+    t2 call sum 2
+    PopParam 8
+    z := t2
+    Print call sum
+    EndFunc 
