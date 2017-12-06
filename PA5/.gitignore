@@ -83,3 +83,4 @@ dkms.conf
 *.app
 
 /parser
+*.tmp
