@@ -134,7 +134,7 @@ void constantFolding(vector<TACObject>& TACContainer) {
 
         if (qualified) {
 
-            int a = split_result[0] == " " ? stoi(split_result[0]) : 0;
+            int a = split_result[0] == "" ? 0 : stoi(split_result[0]);
             int b = stoi(split_result[2]);
 
             string op = split_result[1];
@@ -263,14 +263,14 @@ void linearScan(map<string, Trump>& regMap, vector<TACObject>& container) {
             }
 
             auto reg = "t" + to_string(Node::tempRegister);
-            Node::tempRegister++; Node::stackRegister;
+            Node::tempRegister++; Node::stackRegister++;
             regMap[taco.lhs] = make_pair(reg, curr_context);
         } else {
             if (taco.rhs[0] == 't') {
                 regMap[taco.lhs] = make_pair(taco.rhs, curr_context);
             } else {
                 auto reg = "t" + to_string(Node::tempRegister);
-                Node::tempRegister++; Node::stackRegister;
+                Node::tempRegister++; Node::stackRegister++;
                 regMap[taco.lhs] = make_pair(reg, curr_context);
             }
         }
@@ -420,6 +420,7 @@ bool does_trump_exists(string key, map<string, Trump>& regMap) {
 
 void generateMIPS(vector<TACObject>& TACContainer) {
     map<string, pair<string, string>> regMap;
+
     vector<string> rhs_tokens;
     bool is_main = false;
 
@@ -582,8 +583,8 @@ string Program::Emit() {
     //constantPropagation(TACContainer);
     //deadCodeElimination(TACContainer);
 
-//    generateIR(TACContainer);
-    generateMIPS(TACContainer);
+    generateIR(TACContainer);
+    //generateMIPS(TACContainer);
     return "Program::Emit()";
 }
 
