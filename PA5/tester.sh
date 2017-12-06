@@ -52,11 +52,8 @@ function compare_diff() {
         diff -yW"`tput cols`" <(./parser < samples/$1.java) <(cat samples/$1.out)
         echo "Note: install colordiff for nicer output"
     else
-        if [ -z "$2" ]; then
-            colordiff -yW"`tput cols`" <(./parser < samples/$1.java) <(cat samples/$1.out)
-        else
-            colordiff -yW"$2" <(./parser < samples/$1.java) <(cat samples/$1.out)
-        fi
+        if [ -z "$2" ]; then col="`tput cols`"; else col="$2"; fi
+        colordiff -yW "$col" <(./parser < samples/$1.java) <(cat samples/$1.out)
     fi
 }
 
