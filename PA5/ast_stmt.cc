@@ -418,7 +418,7 @@ bool does_trump_exists(string key, map<string, Trump>& regMap) {
     return false;
 }
 
-void generateMIPS(vector<TACObject>& TACContainer) {
+void generateMIPS(vector<TACObject>& TACContainer, const bool& debug = false) {
     map<string, pair<string, string>> regMap;
 
     vector<string> rhs_tokens;
@@ -431,23 +431,24 @@ void generateMIPS(vector<TACObject>& TACContainer) {
     linearScan(regMap, TACContainer);
 
     /** DEBUG **/
-//    Color::Modifier c_red(Color::Code::FG_RED);
-//    Color::Modifier c_green(Color::Code::FG_GREEN);
-//    Color::Modifier c_blue(Color::Code::FG_BLUE);
-//    Color::Modifier c_def(Color::Code::FG_DEFAULT);
-//    cout << c_blue << "(regMap content): " << endl;
-//    for (auto pair : regMap)
-//        cout << "---(dbg) " << setw(7) << pair.first << ":" << setw(7) << pair.second << endl;
-//    cout << c_def << endl;
+    Color::Modifier c_red(Color::Code::FG_RED);
+    Color::Modifier c_green(Color::Code::FG_GREEN);
+    Color::Modifier c_blue(Color::Code::FG_BLUE);
+    Color::Modifier c_def(Color::Code::FG_DEFAULT);
+    if (debug) {
+        cout << c_blue << "(regMap content): " << endl;
+        for (const auto& trump : regMap)
+            cout << "---(dbg) " << setw(7) << trump.first << ":" << setw(7) << trump.second.first << endl;
+        cout << c_def << endl; }
     /** END DEBUG **/
 
     cout << "  jal main" << endl;
     for (auto &taco : TACContainer) {
 
-        /** DEBUG **/
-//        cout << c_blue ;
-//        printTAC(taco);
-//        cout << c_def ;
+        /** DEBUG **/ if (debug) {
+        cout << c_blue ;
+        printTAC(taco);
+        cout << c_def ; }
         /** END DEBUG **/
 
         switch(taco.type) {
@@ -572,6 +573,8 @@ void generateMIPS(vector<TACObject>& TACContainer) {
     cout << "  # End Program" << endl;
     cout << "  li $v0, 10" << endl;
     cout << "  syscall" << endl;
+//    for (const auto &asd : regMap)
+//        cout << asd.first << " is mapped to " << asd.second.first << " in " << asd.second.second << endl;
 }
 
 string Program::Emit() {
